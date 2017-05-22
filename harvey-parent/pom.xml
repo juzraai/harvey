@@ -17,8 +17,10 @@
 		<jcommander.version>1.69</jcommander.version>
 		<junit.version>4.12</junit.version>
 		<kotlin.compiler.incremental>true</kotlin.compiler.incremental>
+		<kotlin.logging.version>1.4.4</kotlin.logging.version>
 		<kotlin.version>1.1.2-4</kotlin.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<slf4j.version>1.7.25</slf4j.version>
 	</properties>
 
 	<repositories>
@@ -55,11 +57,30 @@
 	<dependencyManagement>
 		<dependencies>
 
+			<!-- Log -->
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-log4j12</artifactId>
+				<version>${slf4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.github.microutils</groupId>
+				<artifactId>kotlin-logging</artifactId>
+				<version>${kotlin.logging.version}</version>
+			</dependency>
+
 			<!-- CLI -->
 			<dependency>
 				<groupId>com.beust</groupId>
 				<artifactId>jcommander</artifactId>
 				<version>${jcommander.version}</version>
+			</dependency>
+
+			<!-- Util -->
+			<dependency>
+				<groupId>com.github.juzraai</groupId>
+				<artifactId>toolbox</artifactId>
+				<version>3db9c2fa62</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

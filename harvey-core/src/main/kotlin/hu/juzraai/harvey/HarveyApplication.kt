@@ -1,8 +1,9 @@
 package hu.juzraai.harvey
 
-import com.beust.jcommander.JCommander
 import com.beust.jcommander.ParameterException
-import hu.juzraai.harvey.cli.Arguments
+import hu.juzraai.harvey.cli.ArgumentsParser
+import hu.juzraai.harvey.cli.Configuration
+import hu.juzraai.harvey.cli.PropertiesLoader
 import hu.juzraai.toolbox.log.LoggerSetup
 import mu.KLogging
 import org.apache.log4j.Level
@@ -10,7 +11,7 @@ import java.io.File
 
 fun main(args: Array<String>) {
 	printLogo()
-	println("To override the main class, redefine `main.class` property in your POM.")
+	println("To override the main class, redefine `main.class` property in your POM.\n")
 	HarveyApplication(args).run()
 }
 
@@ -24,48 +25,39 @@ open class HarveyApplication(val args: Array<String>) : Runnable {
 
 	companion object : KLogging()
 
-	var arguments: Arguments = Arguments()
+	var configuration: Configuration = Configuration()
+	val propertiesFile = File("application.yml")
 
 	protected open fun handleParameterException(e: ParameterException) {
 		println("[ERROR] ${e.message}\n")
 		e.usage()
 	}
 
-	protected fun parameterException(message: String, jc: JCommander): ParameterException {
-		val e = ParameterException(message)
-		e.jCommander = jc
-		return e
+	protected open fun loadPropertiesFile(propertiesFile: File) {
+		PropertiesLoader().loadPropertiesFile(propertiesFile, configuration)
 	}
 
-	protected open fun parseArguments(args: Array<String>): Arguments {
-		val a = Arguments()
-		val jc = JCommander.newBuilder().addObject(a).build()
-		jc.parse(*args)
-		with(a) {
-			if (null != configFile && !File(configFile).exists())
-				throw parameterException("Specified config file does not exists !", jc)
-
-			if (null != tasksFile && !File(tasksFile).exists())
-				throw parameterException("Specified tasks file does not exists !", jc)
-
-			if (verbosity !in 0..5)
-				throw parameterException("Verbosity level should be in range 0..5 !", jc)
-
-			if (null != wuiPort && wuiPort!! !in 0..65535)
-				throw parameterException("WUI port number should be in range 0..65535 !", jc)
-		}
-		this.arguments = a
-		return a
+	protected open fun parseArguments(args: Array<String>) {
+		ArgumentsParser().parseArguments(args, configuration)
 	}
 
 	override fun run() {
 		try {
+			// load file based config first
+			loadPropertiesFile(propertiesFile)
+
+			// override it with cl arguments
 			parseArguments(args)
-			with(arguments) {
+
+			with(configuration) {
+
 				setupLogging(verbosity)
+
 				if (null != wuiPort) startWUI(wuiPort!!)
-				// TODO do the magic
+
+				// TODO do the magic (db, batch c/t, read input w reader, ...)
 			}
+
 		} catch (e: ParameterException) {
 			handleParameterException(e)
 		}

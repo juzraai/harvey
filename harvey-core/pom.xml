@@ -25,12 +25,10 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.7.25</version>
 		</dependency>
 		<dependency>
 			<groupId>io.github.microutils</groupId>
 			<artifactId>kotlin-logging</artifactId>
-			<version>1.4.4</version>
 		</dependency>
 
 		<!-- CLI -->
@@ -43,7 +41,6 @@
 		<dependency>
 			<groupId>com.github.juzraai</groupId>
 			<artifactId>toolbox</artifactId>
-			<version>3db9c2fa62</version>
 		</dependency>
 	</dependencies>
 

@@ -1,19 +1,38 @@
 package hu.juzraai.harvey.cli
 
+import com.beust.jcommander.DynamicParameter
 import com.beust.jcommander.Parameter
 
 /**
  * @author Zsolt Jurányi
  */
-data class Arguments(
+data class Configuration(
 
 		@Parameter(names = arrayOf("-b", "--batch-id"),
-				required = true,
 				description = "ID of the batch (task group). If you additionally specify a tasks file (-t), those tasks will be stored with this batch ID. Otherwise, tasks will be queried from the database using this batch ID.")
 		var batchId: String? = null,
 
 		@Parameter(names = arrayOf("-c", "--config-file")) // TODO desc
 		var configFile: String? = null,
+
+		@Parameter(names = arrayOf("-h", "--dbhost")) // TODO desc
+		var databaseHost: String = "localhost",
+
+		@Parameter(names = arrayOf("-n", "--dbname")) // TODO desc
+		var databaseName: String? = null,
+
+		@Parameter(names = arrayOf("-p", "--dbpass")) // TODO desc
+		var databasePassword: String? = null,
+
+		@Parameter(names = arrayOf("-P", "--dbport")) // TODO desc
+		var databasePort: Int = 3306,
+
+		@Parameter(names = arrayOf("-u", "--dbuser")) // TODO desc
+		var databaseUser: String? = null,
+
+		@DynamicParameter(names = arrayOf("-D"),
+				description = "Additional (e.g. crawler specific) parameters.")
+		var parameters: Map<String, String> = mutableMapOf(),
 
 		@Parameter(names = arrayOf("-t", "--tasks-file")) // TODO desc
 		var tasksFile: String? = null,

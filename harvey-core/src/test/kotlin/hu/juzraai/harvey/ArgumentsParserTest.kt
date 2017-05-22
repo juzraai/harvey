@@ -1,65 +1,60 @@
 package hu.juzraai.harvey
 
 import com.beust.jcommander.ParameterException
-import hu.juzraai.harvey.cli.Arguments
+import hu.juzraai.harvey.cli.ArgumentsParser
+import hu.juzraai.harvey.cli.Configuration
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
 /**
  * @author Zsolt Jurányi
  */
-class CliTest {
+class ArgumentsParserTest {
 
-	object H : HarveyApplication(arrayOf("")) {
-		// needs to be public for testing, so...
-		public override fun parseArguments(args: Array<String>): Arguments {
-			return super.parseArguments(args)
-		}
-	}
-
-	private fun h(args: String): HarveyApplication {
-		H.parseArguments(args.split(' ').toTypedArray())
-		return H
+	private fun parse(args: String): Configuration {
+		val configuration = Configuration()
+		ArgumentsParser().parseArguments(args.split(' ').toTypedArray(), configuration)
+		return configuration
 	}
 
 	@Test
 	fun accepts0AsVerbosity() {
-		assertEquals(0, h("-v 0").arguments.verbosity)
+		assertEquals(0, parse("-b test -v 0").verbosity)
 	}
 
 	@Test
 	fun accepts5AsVerbosity() {
-		assertEquals(5, h("-v 5").arguments.verbosity)
+		assertEquals(5, parse("-b test -v 5").verbosity)
 	}
 
 	@Test
 	fun accepts0AsWuiPort() {
-		assertEquals(0, h("-w 0").arguments.wuiPort)
+		assertEquals(0, parse("-b test -w 0").wuiPort)
 	}
 
 	@Test
 	fun accepts65535AsWuiPort() {
-		assertEquals(65535, h("-w 65535").arguments.wuiPort)
+		assertEquals(65535, parse("-b test -w 65535").wuiPort)
 	}
 
 	@Test(expected = ParameterException::class)
 	fun throwsExIfVerbosityIsAbove5() {
-		h("-v 6")
+		parse("-b test -v 6")
 	}
 
 	@Test(expected = ParameterException::class)
 	fun throwsExIfVerbosityIsNegative() {
-		h("-v -1")
+		parse("-b test -v -1")
 	}
 
 	@Test(expected = ParameterException::class)
 	fun throwsExIfWuiPortIsAbove65535() {
-		h("-w 65536")
+		parse("-b test -w 65536")
 	}
 
 	@Test(expected = ParameterException::class)
 	fun throwsExIfWuiPortIsNegative() {
-		h("-w -1")
+		parse("-b test -w -1")
 	}
 
 }
