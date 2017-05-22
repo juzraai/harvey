@@ -3,19 +3,27 @@ package hu.juzraai.harvey
 import com.beust.jcommander.ParameterException
 import hu.juzraai.harvey.cli.ArgumentsParser
 import hu.juzraai.harvey.cli.Configuration
+import hu.juzraai.harvey.cli.ConfigurationValidator
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
 /**
  * @author Zsolt Jurányi
  */
-class ArgumentsParserTest {
+open class ArgumentsParserTest {
+
+	var parser = ArgumentsParser()
+	var validator = ConfigurationValidator()
 
 	private fun parse(args: String): Configuration {
 		val configuration = Configuration()
-		ArgumentsParser().parseArguments(args.split(' ').toTypedArray(), configuration)
+		parser.parseArguments(args.split(' ').toTypedArray(), configuration)
+		validator.validateConfiguration(configuration)
 		return configuration
 	}
+
+	// TODO dbport range test
+	// TODO dbport <> wuiport test
 
 	@Test
 	fun accepts0AsVerbosity() {

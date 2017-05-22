@@ -1,8 +1,10 @@
 package hu.juzraai.harvey
 
+import com.beust.jcommander.JCommander
 import com.beust.jcommander.ParameterException
 import hu.juzraai.harvey.cli.ArgumentsParser
 import hu.juzraai.harvey.cli.Configuration
+import hu.juzraai.harvey.cli.ConfigurationValidator
 import hu.juzraai.harvey.cli.PropertiesLoader
 import hu.juzraai.toolbox.log.LoggerSetup
 import mu.KLogging
@@ -26,11 +28,15 @@ open class HarveyApplication(val args: Array<String>) : Runnable {
 	companion object : KLogging()
 
 	var configuration: Configuration = Configuration()
-	val propertiesFile = File("application.yml")
+	var propertiesFile = File("application.yml")
 
 	protected open fun handleParameterException(e: ParameterException) {
 		println("[ERROR] ${e.message}\n")
-		e.usage()
+		JCommander.newBuilder()
+				.programName("harvey-app")
+				.addObject(Configuration())
+				.build()
+				.usage()
 	}
 
 	protected open fun loadPropertiesFile(propertiesFile: File) {
@@ -48,6 +54,9 @@ open class HarveyApplication(val args: Array<String>) : Runnable {
 
 			// override it with cl arguments
 			parseArguments(args)
+
+			// validate configuration
+			validateConfiguration(configuration)
 
 			with(configuration) {
 
@@ -72,6 +81,10 @@ open class HarveyApplication(val args: Array<String>) : Runnable {
 		val level = arrayOf(Level.OFF, Level.ERROR, Level.WARN, Level.INFO, Level.DEBUG, Level.TRACE)[v]
 		LoggerSetup.level(level)
 		if (Level.OFF != level) LoggerSetup.outputOnlyToConsole()
+	}
+
+	protected open fun validateConfiguration(configuration: Configuration) {
+		ConfigurationValidator().validateConfiguration(configuration)
 	}
 
 }
