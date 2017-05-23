@@ -30,23 +30,6 @@ open class HarveyApplication(val args: Array<String>) : Runnable {
 	var configuration: Configuration = Configuration()
 	var propertiesFile = File("application.yml")
 
-	protected open fun handleParameterException(e: ParameterException) {
-		println("[ERROR] ${e.message}\n")
-		JCommander.newBuilder()
-				.programName("harvey-app")
-				.addObject(Configuration())
-				.build()
-				.usage()
-	}
-
-	protected open fun loadPropertiesFile(propertiesFile: File) {
-		PropertiesLoader().loadPropertiesFile(propertiesFile, configuration)
-	}
-
-	protected open fun parseArguments(args: Array<String>) {
-		ArgumentsParser().parseArguments(args, configuration)
-	}
-
 	override fun run() {
 		try {
 			// load file based config first
@@ -70,6 +53,23 @@ open class HarveyApplication(val args: Array<String>) : Runnable {
 		} catch (e: ParameterException) {
 			handleParameterException(e)
 		}
+	}
+
+	protected open fun handleParameterException(e: ParameterException) {
+		println("[ERROR] ${e.message}\n")
+		JCommander.newBuilder()
+				.programName("harvey-app")
+				.addObject(Configuration())
+				.build()
+				.usage()
+	}
+
+	protected open fun loadPropertiesFile(propertiesFile: File) {
+		PropertiesLoader().loadPropertiesFile(propertiesFile, configuration)
+	}
+
+	protected open fun parseArguments(args: Array<String>) {
+		ArgumentsParser().parseArguments(args, configuration)
 	}
 
 	protected open fun startWUI(wuiPort: Int) {

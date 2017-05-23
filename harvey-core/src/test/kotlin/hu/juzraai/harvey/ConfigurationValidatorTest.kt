@@ -10,7 +10,7 @@ import org.junit.Test
 /**
  * @author Zsolt Jurányi
  */
-open class ArgumentsParserTest {
+open class ConfigurationValidatorTest {
 
 	var parser = ArgumentsParser()
 	var validator = ConfigurationValidator()
@@ -22,8 +22,15 @@ open class ArgumentsParserTest {
 		return configuration
 	}
 
-	// TODO dbport range test
-	// TODO dbport <> wuiport test
+	@Test
+	fun accepts0AsDatabasePort() {
+		assertEquals(0, parse("-b test -P 0").databasePort)
+	}
+
+	@Test
+	fun accepts65535AsDatabasePort() {
+		assertEquals(65535, parse("-b test -P 65535").databasePort)
+	}
 
 	@Test
 	fun accepts0AsVerbosity() {
@@ -43,6 +50,21 @@ open class ArgumentsParserTest {
 	@Test
 	fun accepts65535AsWuiPort() {
 		assertEquals(65535, parse("-b test -w 65535").wuiPort)
+	}
+
+	@Test(expected = ParameterException::class)
+	fun throwsExIfDatabasePortEqualsWuiPort() {
+		parse("-b test -P 1234 -w 1234")
+	}
+
+	@Test(expected = ParameterException::class)
+	fun throwsExIfDatabasePortIsAbove65535() {
+		parse("-b test -P 65536")
+	}
+
+	@Test(expected = ParameterException::class)
+	fun throwsExIfDatabasePortIsNegative() {
+		parse("-b test -P -1")
 	}
 
 	@Test(expected = ParameterException::class)
