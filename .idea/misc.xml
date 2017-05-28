@@ -6,6 +6,11 @@
         <option value="$PROJECT_DIR$/harvey-parent/pom.xml" />
       </list>
     </option>
+    <option name="ignoredFiles">
+      <set>
+        <option value="$PROJECT_DIR$/harvey-parent/pom.xml" />
+      </set>
+    </option>
   </component>
   <component name="ProjectDictionaryState">
     <dictionary name="zsolt" />

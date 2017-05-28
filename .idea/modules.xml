@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/harvey.iml" filepath="$PROJECT_DIR$/harvey.iml" />
       <module fileurl="file://$PROJECT_DIR$/harvey-core/harvey-core.iml" filepath="$PROJECT_DIR$/harvey-core/harvey-core.iml" />
-      <module fileurl="file://$PROJECT_DIR$/harvey-parent/harvey-parent.iml" filepath="$PROJECT_DIR$/harvey-parent/harvey-parent.iml" />
     </modules>
   </component>
 </project>

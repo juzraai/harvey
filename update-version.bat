@@ -1,0 +1,1 @@
+mvn versions:set -DgenerateBackupPoms=false < .version && mvn versions:update-child-modules -DgenerateBackupPoms=false
