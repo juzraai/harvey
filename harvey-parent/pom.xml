@@ -4,24 +4,19 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
+	<parent>
+		<groupId>com.github.juzraai.maven-parents</groupId>
+		<artifactId>kotlin-project</artifactId>
+		<version>1.0.1</version>
+	</parent>
+
 	<groupId>hu.juzraai.harvey</groupId>
 	<artifactId>harvey-parent</artifactId>
-	<packaging>pom</packaging>
 	<version>1.0-SNAPSHOT</version>
 
-	<modules>
-		<module>../harvey-core</module>
-	</modules>
+	<packaging>pom</packaging>
 
-	<properties>
-		<jcommander.version>1.69</jcommander.version>
-		<junit.version>4.12</junit.version>
-		<kotlin.compiler.incremental>true</kotlin.compiler.incremental>
-		<kotlin.logging.version>1.4.4</kotlin.logging.version>
-		<kotlin.version>1.1.2-4</kotlin.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<slf4j.version>1.7.25</slf4j.version>
-	</properties>
+	<name>harvey-parent</name>
 
 	<repositories>
 		<repository>
@@ -30,129 +25,7 @@
 		</repository>
 	</repositories>
 
-	<dependencies>
-
-		<!-- Kotlin -->
-		<dependency>
-			<groupId>org.jetbrains.kotlin</groupId>
-			<artifactId>kotlin-stdlib</artifactId>
-			<version>${kotlin.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jetbrains.kotlin</groupId>
-			<artifactId>kotlin-test-junit</artifactId>
-			<version>${kotlin.version}</version>
-			<scope>test</scope>
-		</dependency>
-
-		<!-- Test -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
-
-	<dependencyManagement>
-		<dependencies>
-
-			<!-- Log -->
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-log4j12</artifactId>
-				<version>${slf4j.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.github.microutils</groupId>
-				<artifactId>kotlin-logging</artifactId>
-				<version>${kotlin.logging.version}</version>
-			</dependency>
-
-			<!-- CLI -->
-			<dependency>
-				<groupId>com.beust</groupId>
-				<artifactId>jcommander</artifactId>
-				<version>${jcommander.version}</version>
-			</dependency>
-
-			<!-- Util -->
-			<dependency>
-				<groupId>com.github.juzraai</groupId>
-				<artifactId>toolbox</artifactId>
-				<version>3db9c2fa62</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-
-	<build>
-		<sourceDirectory>src/main/kotlin</sourceDirectory>
-		<testSourceDirectory>src/test/kotlin</testSourceDirectory>
-
-		<plugins>
-			<plugin>
-				<groupId>org.jetbrains.kotlin</groupId>
-				<artifactId>kotlin-maven-plugin</artifactId>
-				<version>${kotlin.version}</version>
-				<executions>
-					<execution>
-						<id>compile</id>
-						<phase>compile</phase>
-						<goals>
-							<goal>compile</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>test-compile</id>
-						<phase>test-compile</phase>
-						<goals>
-							<goal>test-compile</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-jar-plugin</artifactId>
-					<version>2.6</version>
-					<configuration>
-						<archive>
-							<manifest>
-								<addClasspath>true</addClasspath>
-								<mainClass>${main.class}</mainClass>
-							</manifest>
-						</archive>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-assembly-plugin</artifactId>
-					<version>2.6</version>
-					<executions>
-						<execution>
-							<id>make-assembly</id>
-							<phase>package</phase>
-							<goals>
-								<goal>single</goal>
-							</goals>
-							<configuration>
-								<archive>
-									<manifest>
-										<mainClass>${main.class}</mainClass>
-									</manifest>
-								</archive>
-								<descriptorRefs>
-									<descriptorRef>jar-with-dependencies</descriptorRef>
-								</descriptorRefs>
-							</configuration>
-						</execution>
-					</executions>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
+	<modules>
+		<module>../harvey-core</module>
+	</modules>
 </project>
