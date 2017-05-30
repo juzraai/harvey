@@ -1,4 +1,4 @@
-import hu.juzraai.harvey.HarveyApplication
+import hu.juzraai.harvey.DefaultHarveyApplication
 import hu.juzraai.harvey.printLogo
 
 /**
@@ -8,5 +8,5 @@ import hu.juzraai.harvey.printLogo
 fun main(args: Array<String>) {
 	val a = "-v 5"
 	printLogo()
-	HarveyApplication(a.split(' ').toTypedArray()).run()
+	DefaultHarveyApplication(a.split(' ').toTypedArray()).run()
 }
