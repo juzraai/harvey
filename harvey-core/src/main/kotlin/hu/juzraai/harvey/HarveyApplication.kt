@@ -40,6 +40,7 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 				initDatabase(databaseHost, databasePort, databaseName!!, databaseUser!!, databasePassword).use { db ->
 					db.createTables(*tablesToBeCreated())
 					// TODO do the magic (db, batch c/t, read input w reader, ...)
+					// TODO for input reading, we can try SuperCSV
 				}
 			}
 

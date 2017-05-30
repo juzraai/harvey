@@ -47,6 +47,7 @@ data class Configuration(
 				hidden = true) // TODO hidden till WUI's implemented
 		var wuiPort: Int? = null
 
-		// TODO read b/c/t from dir
-		// TODO dynamic parameters
+		// TODO force reprocessing? -f? -F?
+		// TODO input format? -f?
+		// TODO option for reading b/c/t from a dir
 )

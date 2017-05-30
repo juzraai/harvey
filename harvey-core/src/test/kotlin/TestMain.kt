@@ -10,3 +10,5 @@ fun main(args: Array<String>) {
 	printLogo()
 	DefaultHarveyApplication(a.split(' ').toTypedArray()).run()
 }
+
+// TODO example? app with extended Config class - see if it works
