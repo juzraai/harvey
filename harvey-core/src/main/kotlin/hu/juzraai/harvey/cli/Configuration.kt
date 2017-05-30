@@ -12,7 +12,8 @@ data class Configuration(
 				description = "ID of the batch (task group). If you additionally specify a tasks file (-t), those tasks will be stored with this batch ID. Otherwise, tasks will be queried from the database using this batch ID.")
 		var batchId: String? = null,
 
-		@Parameter(names = arrayOf("-c", "--config-file")) // TODO desc
+		@Parameter(names = arrayOf("-c", "--config-file"), // TODO desc
+				hidden = true) // TODO hidden till I figure out whether we need this actually
 		var configFile: String? = null,
 
 		@Parameter(names = arrayOf("-h", "--dbhost")) // TODO desc

@@ -6,24 +6,14 @@ import hu.juzraai.harvey.cli.ArgumentsParser
 import hu.juzraai.harvey.cli.Configuration
 import hu.juzraai.harvey.cli.ConfigurationValidator
 import hu.juzraai.harvey.cli.PropertiesLoader
+import hu.juzraai.toolbox.data.OrmLiteDatabase
+import hu.juzraai.toolbox.jdbc.ConnectionString
 import hu.juzraai.toolbox.log.LoggerSetup
 import mu.KLogging
 import org.apache.log4j.Level
 import java.io.File
 
-fun main(args: Array<String>) {
-	printLogo()
-	println("To override the main class, redefine `main.class` property in your POM.\n")
-	HarveyApplication(args).run()
-}
-
-fun printLogo() {
-	println(ClassLoader.getSystemClassLoader()
-			.getResourceAsStream("welcome.txt")
-			.bufferedReader().use { it.readText() })
-}
-
-open class HarveyApplication(val args: Array<String>) : Runnable {
+abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApplication {
 
 	companion object : KLogging()
 
@@ -47,7 +37,10 @@ open class HarveyApplication(val args: Array<String>) : Runnable {
 
 				if (null != wuiPort) startWUI(wuiPort!!)
 
-				// TODO do the magic (db, batch c/t, read input w reader, ...)
+				initDatabase(databaseHost, databasePort, databaseName!!, databaseUser!!, databasePassword).use { db ->
+					db.createTables(*tablesToBeCreated())
+					// TODO do the magic (db, batch c/t, read input w reader, ...)
+				}
 			}
 
 		} catch (e: ParameterException) {
@@ -62,6 +55,15 @@ open class HarveyApplication(val args: Array<String>) : Runnable {
 				.addObject(Configuration())
 				.build()
 				.usage()
+	}
+
+	protected open fun initDatabase(host: String, port: Int, schema: String, user: String, pass: String?): OrmLiteDatabase {
+		val cs = ConnectionString.MYSQL()
+				.host(host)
+				.port(port)
+				.schema(schema)
+				.build()
+		return OrmLiteDatabase.build(cs, user, pass)
 	}
 
 	protected open fun loadPropertiesFile(propertiesFile: File) {

@@ -15,7 +15,7 @@
 	<name>harvey-core</name>
 
 	<properties>
-		<main.class>hu.juzraai.harvey.HarveyApplicationKt</main.class>
+		<main.class>hu.juzraai.harvey.DefaultHarveyApplicationKt</main.class>
 	</properties>
 
 	<dependencies>

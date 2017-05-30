@@ -22,6 +22,8 @@ open class ConfigurationValidatorTest {
 		return configuration
 	}
 
+	// TODO test db user, db name null/blank exception
+
 	@Test
 	fun accepts0AsDatabasePort() {
 		assertEquals(0, parse("-b test -P 0").databasePort)
