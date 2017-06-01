@@ -17,6 +17,10 @@ fun printLogo() {
  */
 class DefaultHarveyApplication(args: Array<String>) : HarveyApplication(args) {
 
+	override fun crawlerId(): String = "default-crawler"
+
+	override fun crawlerVersion(): Int = 0
+
 	override fun tablesToBeCreated(): Array<Class<*>> = arrayOf()
 }
 

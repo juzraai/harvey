@@ -5,5 +5,7 @@ package hu.juzraai.harvey
  */
 interface IHarveyApplication {
 
+	fun crawlerId(): String
+	fun crawlerVersion(): Int
 	fun tablesToBeCreated(): Array<Class<*>>
 }
