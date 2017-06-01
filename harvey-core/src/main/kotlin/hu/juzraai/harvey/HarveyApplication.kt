@@ -18,29 +18,51 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 	companion object : KLogging()
 
 	var configuration: Configuration = Configuration()
+	var database: OrmLiteDatabase? = null
 	var propertiesFile = File("application.yml")
 
 	override fun run() {
+
+		// No logging, no database
+
+		loadPropertiesFile()
 		try {
-			loadPropertiesFile()
 			parseArguments()
-			validateConfiguration()
-			setupLogging()
-			startWUI()
-			initDatabaseConnection().use { db ->
-				db.createTables(*tablesToBeCreated()) // TODO move to fun
-				// TODO do the magic (db, batch c/t, read input w reader, ...)
-
-				// TODO:
-				// if we got a tasksfile, import tasks
-				// -
-				// query all tasks for batchId and process them
-
-				// TODO for input reading, we can try SuperCSV
-			}
 		} catch (e: ParameterException) {
 			handleParameterException(e)
+			return
 		}
+		validateConfiguration()
+		setupLogging()
+
+		// Now with logging and database
+
+		initDatabaseConnection().use { db ->
+			database = db
+			if (canStartWUI()) startWUI()
+			createDatabaseTables()
+			if (canImportTasks()) importTasks()
+
+			// TODO do the magic (db, batch c/t, read input w reader, ...)
+
+			// TODO:
+			// if we got a tasksfile, import tasks - if a task is already in db and it's different, mark it as unprocessed
+			// -
+			// query all tasks for batchId and process them
+
+			// TODO for input reading, we can try SuperCSV
+
+			// TODO should we wait here for WUI exit before closing db or what?
+		}
+	}
+
+	protected open fun canImportTasks(): Boolean = !configuration.tasksFile.isNullOrBlank()
+
+	protected open fun canStartWUI(): Boolean = null != configuration.wuiPort
+
+	protected open fun createDatabaseTables() {
+		logger.debug("Creating database tables")
+		database?.createTables(*tablesToBeCreated())
 	}
 
 	protected open fun handleParameterException(e: ParameterException) {
@@ -52,8 +74,18 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 				.usage()
 	}
 
+	protected open fun importTasks() {
+		with(configuration) {
+			logger.info("Importing tasks from {} for batch {}", tasksFile, batchId)
+			// TODO request input stream... maybe from a tasksFileIterator() fun?
+			// TODO import tasks from tasks file into database
+			// TODO if a task is already in db AND it's different, mark it as unprocessed
+		}
+	}
+
 	protected open fun initDatabaseConnection(): OrmLiteDatabase {
 		with(configuration) {
+			logger.info("Initializing database connection {}@{}/{}", databaseUser, databaseHost, databaseName)
 			val cs = ConnectionString.MYSQL()
 					.host(databaseHost)
 					.port(databasePort)
@@ -72,10 +104,8 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 	}
 
 	protected open fun startWUI() {
-		if (null != configuration.wuiPort) {
-			logger.error("Sorry, WUI is not implemented yet.")
-			// TODO start wui (sparkjava!)
-		}
+		logger.info("Sorry, WUI is not implemented yet.")
+		// TODO start wui (sparkjava!)
 	}
 
 	protected open fun setupLogging() {
