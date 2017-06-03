@@ -8,6 +8,8 @@ import java.io.File
  */
 open class ConfigurationValidator {
 
+	// TODO later: no -b but -w for global WUI
+
 	open fun validateConfiguration(configuration: Configuration) {
 		with(configuration) {
 			validateBatchId(batchId)
@@ -19,7 +21,7 @@ open class ConfigurationValidator {
 			validateVerbosity(verbosity)
 			validateWuiPort(wuiPort)
 
-			if (null != wuiPort && wuiPort!! == databasePort)
+			if (null != wuiPort && wuiPort == databasePort)
 				throw ParameterException("WUI port number must differ from database port !")
 		}
 	}
@@ -60,7 +62,7 @@ open class ConfigurationValidator {
 	}
 
 	protected open fun validateWuiPort(wuiPort: Int?) {
-		if (null != wuiPort && wuiPort!! !in 0..65535)
+		if (null != wuiPort && wuiPort !in 0..65535)
 			throw ParameterException("WUI port number must be in range 0..65535 !")
 	}
 }

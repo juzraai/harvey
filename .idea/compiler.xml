@@ -10,6 +10,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="harvey" target="1.5" />
       <module name="harvey-core" target="1.5" />
       <module name="harvey-parent" target="1.5" />
     </bytecodeTargetLevel>
