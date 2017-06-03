@@ -1,6 +1,5 @@
-package hu.juzraai.harvey
+package hu.juzraai.harvey.reader
 
-import hu.juzraai.harvey.reader.TsvFileReader
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.nio.charset.StandardCharsets

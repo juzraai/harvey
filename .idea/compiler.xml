@@ -7,12 +7,14 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="harvey-core" />
+        <module name="harvey-util" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="harvey" target="1.5" />
       <module name="harvey-core" target="1.5" />
       <module name="harvey-parent" target="1.5" />
+      <module name="harvey-util" target="1.5" />
     </bytecodeTargetLevel>
   </component>
 </project>

@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/harvey.iml" filepath="$PROJECT_DIR$/harvey.iml" />
       <module fileurl="file://$PROJECT_DIR$/harvey-core/harvey-core.iml" filepath="$PROJECT_DIR$/harvey-core/harvey-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/harvey-util/harvey-util.iml" filepath="$PROJECT_DIR$/harvey-util/harvey-util.iml" />
     </modules>
   </component>
 </project>

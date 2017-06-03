@@ -27,5 +27,6 @@
 
 	<modules>
 		<module>harvey-core</module>
+		<module>harvey-util</module>
 	</modules>
 </project>

@@ -8,7 +8,6 @@ import java.util.*
  * @author Zsolt Jurányi
  */
 class TsvFileReader(inputStream: InputStream, headerLine: Boolean) : Iterator<Map<String, String>> {
-	// TODO move to harvey-util
 
 	companion object {
 		const val SEPARATOR = '\t'

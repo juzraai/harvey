@@ -2,6 +2,7 @@ package hu.juzraai.harvey
 
 import com.beust.jcommander.JCommander
 import com.beust.jcommander.ParameterException
+import com.google.gson.Gson
 import hu.juzraai.harvey.cli.ArgumentsParser
 import hu.juzraai.harvey.cli.Configuration
 import hu.juzraai.harvey.cli.ConfigurationValidator
@@ -9,10 +10,13 @@ import hu.juzraai.harvey.cli.PropertiesLoader
 import hu.juzraai.harvey.model.Batch
 import hu.juzraai.harvey.model.State
 import hu.juzraai.harvey.model.Task
+import hu.juzraai.harvey.reader.TsvFileReader
 import hu.juzraai.toolbox.data.OrmLiteDatabase
 import hu.juzraai.toolbox.jdbc.ConnectionString
 import hu.juzraai.toolbox.log.LoggerSetup
 import mu.KLogging
+import org.apache.commons.codec.binary.Base64
+import org.apache.commons.codec.digest.DigestUtils
 import org.apache.log4j.Level
 import java.io.File
 
@@ -23,7 +27,6 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 		const val BATCH_TABLE_NAME = TABLE_PREFIX + "batch"
 		const val STATE_TABLE_NAME = TABLE_PREFIX + "state"
 		const val TASK_TABLE_NAME = TABLE_PREFIX + "task"
-
 	}
 
 	var configuration: Configuration = Configuration()
@@ -52,7 +55,6 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 			createDatabaseTables()
 			if (canImportTasks()) importTasks()
 			// TODO query all tasks for batchId and process them
-			// TODO for input reading, we can try SuperCSV
 			// TODO should we wait here for WUI exit before closing db or what?
 		}
 		logger.info("Harvey's shutting down")
@@ -81,20 +83,22 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 				.usage()
 	}
 
+	protected open fun hash(input: String): String = Base64.encodeBase64String(DigestUtils.sha1(input))
+
 	protected open fun importTasks() {
 		with(configuration) {
 			logger.info("Importing tasks from {} for batch {}", tasksFile, batchId)
-			// TODO request input stream... maybe from a tasksFileIterator() fun?
-			// TODO start with TSV reader, dont complicate it
-			// TODO import tasks from tasks file into database
-			// TODO if a task is already in db AND it's different, mark it as unprocessed
+			rawTaskIterator().forEach { map ->
+				val task = Task()
+				task.data = toJson(map)
+				task.id = hash(task.data)
+				// TODO store (insert ignore)
 
-			// TODO NEW IDEA: task ID should be generated from data. so modified task -> new record -> unprocessed
-
-			// Tables:
-			// - task: id (data -> hash), data (tsv -> map -> json), imported_at
-			// - state: task_id, crawler_id, crawler_version, processed_at, state (json)
-			// - batch: batch_id + task_id
+				val batch = Batch()
+				batch.batchId = batchId!!
+				batch.task = task
+				// TODO store
+			}
 		}
 	}
 
@@ -118,6 +122,10 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 		ArgumentsParser().parseArguments(args, configuration)
 	}
 
+	protected open fun rawTaskIterator(): Iterator<Map<String, String>> {
+		return TsvFileReader(configuration.tasksFile!!, true)
+	}
+
 	protected open fun startWUI() {
 		logger.info("Sorry, WUI is not implemented yet.")
 		// TODO start wui (sparkjava!)
@@ -128,6 +136,10 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 		LoggerSetup.level(Level.OFF) // muting other libs
 		LoggerSetup.level("hu.juzraai.harvey", level)
 		if (Level.OFF != level) LoggerSetup.outputOnlyToConsole()
+	}
+
+	protected open fun toJson(map: Map<String, String>): String {
+		return Gson().toJson(map)
 	}
 
 	protected open fun validateConfiguration() {
