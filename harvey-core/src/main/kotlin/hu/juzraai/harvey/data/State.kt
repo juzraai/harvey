@@ -12,8 +12,8 @@ import java.util.*
  */
 @DatabaseTable(tableName = HarveyApplication.STATE_TABLE_NAME)
 data class State(
-		@DatabaseField(generatedId = true)
-		var id: Long? = null,
+		@DatabaseField(id = true)
+		var id: String? = null, // "taskId/crawlerId/crawlerVersion" -> SHA1 -> BASE64
 
 		@DatabaseField(canBeNull = false, columnName = "taskId", foreign = true) @Indexed
 		var task: Task? = null,
@@ -28,5 +28,5 @@ data class State(
 		var processedAt: Date? = null,
 
 		@DatabaseField @Longtext
-		var state: String = "" // JSON
+		var state: String? = null // JSON
 )

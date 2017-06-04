@@ -20,6 +20,11 @@ class HarveyDao(val db: OrmLiteDatabase) {
 		batchDao.createIfNotExists(batch)
 	}
 
+	fun storeState(state: State) {
+		logger.trace("Storing state: {}", state)
+		stateDao.createOrUpdate(state)
+	}
+
 	fun storeTask(task: Task): Int {
 		logger.trace("Storing task: {}", task)
 		return if (taskDao.createIfNotExists(task).importedAt == task.importedAt) 1 else 0

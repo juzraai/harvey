@@ -19,6 +19,7 @@ import hu.juzraai.toolbox.log.LoggerSetup
 import mu.KLogging
 import org.apache.log4j.Level
 import java.io.File
+import java.util.*
 
 abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApplication {
 
@@ -41,11 +42,11 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 		loadPropertiesFile()
 		try {
 			parseArguments()
+			validateConfiguration()
 		} catch (e: ParameterException) {
 			handleParameterException(e)
 			return
 		}
-		validateConfiguration()
 		setupLogging()
 
 		// Now with logging and database
@@ -62,6 +63,13 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 		}
 		logger.info("Harvey's shutting down")
 	}
+
+	protected open fun alreadyProcessed(task: Task): Boolean =
+			task.states?.any {
+				crawlerId() == it.crawlerId
+						&& crawlerVersion() == it.crawlerVersion
+						&& null != it.processedAt
+			} ?: false
 
 	protected open fun canImportTasks(): Boolean = !configuration.tasksFile.isNullOrBlank()
 
@@ -80,6 +88,13 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 	protected open fun generateBatchRecord(batchId: String, task: Task): Batch {
 		val id = hash("$batchId/${task.id}")
 		return Batch(id, batchId, task)
+	}
+
+	protected open fun generateStateRecord(task: Task, rawState: Any?, finished: Boolean): State {
+		val id = hash("${task.id}/${crawlerId()}/${crawlerVersion()}")
+		val json = if (null == rawState) null else toJson(rawState)
+		val date = if (finished) Date() else null
+		return State(id, task, crawlerId(), crawlerVersion(), date, json)
 	}
 
 	protected open fun generateTaskRecord(map: Map<String, String>): Task {
@@ -122,6 +137,7 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 					.host(databaseHost)
 					.port(databasePort)
 					.schema(databaseName!!)
+					.utf8(true) // TODO + &useSSL=false
 					.build()
 			return OrmLiteDatabase.build(cs, databaseUser!!, databasePassword)
 		}
@@ -136,15 +152,36 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 	}
 
 	protected open fun processTasks() {
-		val tasks = dao?.tasksOfBatch(configuration.batchId!!)
-		tasks?.forEach {
-			// TODO filter already processed (no processed state for current version) (sep fun)
-			// TODO call abstract process() on tasks
+		with(configuration) {
+			val tasks = dao?.tasksOfBatch(batchId!!)
+			logger.debug("Fetching tasks to process")
+			tasks?.filter { task ->
+				val ap = alreadyProcessed(task)
+				if (ap) logger.trace("Skipping task: {}", task)
+				!ap
+			}?.apply {
+				logger.debug("Batch {} has {} tasks, {} will be processed", batchId!!, tasks?.size ?: 0, size)
+				logger.info("Processing {} tasks of batch {}", size, batchId!!)
+			}?.forEach({ task ->
+				logger.trace("Processing task: {}", task)
+				process(task)
+				// TODO return success?
+				// TODO pass delegated object for calling usual db ops?
+				// TODO or return output record ID?
+
+				// TODO IMPORTANT: catch exception of process()!
+			})
+			// TODO parallel processing?
 		}
 	}
 
 	protected open fun rawTaskIterator(): Iterator<Map<String, String>> {
 		return TsvFileReader(configuration.tasksFile!!, true)
+	}
+
+	protected open fun saveTaskState(task: Task, rawState: Any?, finished: Boolean) {
+		val state = generateStateRecord(task, rawState, finished)
+		dao?.storeState(state)
 	}
 
 	protected open fun startWUI() {
@@ -159,7 +196,7 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 		if (Level.OFF != level) LoggerSetup.outputOnlyToConsole()
 	}
 
-	protected open fun toJson(map: Map<String, String>): String {
+	protected open fun toJson(map: Any): String {
 		return StringUtils.toJson(map)
 	}
 
