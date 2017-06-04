@@ -63,12 +63,6 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 		logger.info("Harvey's shutting down")
 	}
 
-	private fun processTasks() {
-		// TODO query all tasks for batchId - which is not processed by current version
-		// TODO filtering should be a sep method to be flexibel
-		// TODO call abstract process() on tasks
-	}
-
 	protected open fun canImportTasks(): Boolean = !configuration.tasksFile.isNullOrBlank()
 
 	protected open fun canStartWUI(): Boolean = null != configuration.wuiPort
@@ -139,6 +133,14 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 
 	protected open fun parseArguments() {
 		ArgumentsParser().parseArguments(args, configuration)
+	}
+
+	protected open fun processTasks() {
+		val tasks = dao?.tasksOfBatch(configuration.batchId!!)
+		tasks?.forEach {
+			// TODO filter already processed (no processed state for current version) (sep fun)
+			// TODO call abstract process() on tasks
+		}
 	}
 
 	protected open fun rawTaskIterator(): Iterator<Map<String, String>> {

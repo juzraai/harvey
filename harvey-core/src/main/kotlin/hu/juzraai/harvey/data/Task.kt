@@ -12,7 +12,7 @@ import java.util.*
  * @author Zsolt Jurányi
  */
 @DatabaseTable(tableName = HarveyApplication.TASK_TABLE_NAME)
-class Task(
+data class Task(
 		@DatabaseField(id = true)
 		var id: String = "", // data -> SHA1 -> BASE64
 

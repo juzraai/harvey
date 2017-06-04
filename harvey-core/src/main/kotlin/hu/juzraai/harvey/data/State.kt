@@ -11,7 +11,7 @@ import java.util.*
  * @author Zsolt Jurányi
  */
 @DatabaseTable(tableName = HarveyApplication.STATE_TABLE_NAME)
-class State(
+data class State(
 		@DatabaseField(generatedId = true)
 		var id: Long? = null,
 
