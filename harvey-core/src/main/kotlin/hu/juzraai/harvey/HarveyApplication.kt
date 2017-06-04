@@ -2,7 +2,6 @@ package hu.juzraai.harvey
 
 import com.beust.jcommander.JCommander
 import com.beust.jcommander.ParameterException
-import com.google.gson.Gson
 import com.j256.ormlite.misc.TransactionManager
 import hu.juzraai.harvey.conf.ArgumentsParser
 import hu.juzraai.harvey.conf.Configuration
@@ -13,12 +12,11 @@ import hu.juzraai.harvey.data.HarveyDao
 import hu.juzraai.harvey.data.State
 import hu.juzraai.harvey.data.Task
 import hu.juzraai.harvey.reader.TsvFileReader
+import hu.juzraai.harvey.string.StringUtils
 import hu.juzraai.toolbox.data.OrmLiteDatabase
 import hu.juzraai.toolbox.jdbc.ConnectionString
 import hu.juzraai.toolbox.log.LoggerSetup
 import mu.KLogging
-import org.apache.commons.codec.binary.Base64
-import org.apache.commons.codec.digest.DigestUtils
 import org.apache.log4j.Level
 import java.io.File
 
@@ -52,16 +50,23 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 
 		// Now with logging and database
 
+		logger.info("Harvey's starting")
 		initDatabaseConnection().use { db ->
 			database = db
 			dao = HarveyDao(database!!)
 			if (canStartWUI()) startWUI()
 			createDatabaseTables()
 			if (canImportTasks()) importTasks()
-			// TODO query all tasks for batchId and process them
+			processTasks()
 			// TODO should we wait here for WUI exit before closing db or what?
 		}
 		logger.info("Harvey's shutting down")
+	}
+
+	private fun processTasks() {
+		// TODO query all tasks for batchId - which is not processed by current version
+		// TODO filtering should be a sep method to be flexibel
+		// TODO call abstract process() on tasks
 	}
 
 	protected open fun canImportTasks(): Boolean = !configuration.tasksFile.isNullOrBlank()
@@ -97,7 +102,7 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 				.usage()
 	}
 
-	protected open fun hash(input: String): String = Base64.encodeBase64String(DigestUtils.sha1(input))
+	protected open fun hash(input: String): String = StringUtils.toSha1Base64String(input)
 
 	protected open fun importTasks() {
 		with(configuration) {
@@ -153,7 +158,7 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 	}
 
 	protected open fun toJson(map: Map<String, String>): String {
-		return Gson().toJson(map)
+		return StringUtils.toJson(map)
 	}
 
 	protected open fun validateConfiguration() {

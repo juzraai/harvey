@@ -30,9 +30,9 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="harvey-util" />
     <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.10" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.1" level="project" />
-    <orderEntry type="module" module-name="harvey-util" />
     <orderEntry type="library" name="Maven: com.beust:jcommander:1.69" level="project" />
     <orderEntry type="library" name="Maven: io.github.microutils:kotlin-logging:1.4.4" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.21" level="project" />

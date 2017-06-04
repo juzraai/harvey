@@ -21,3 +21,8 @@ So it's basically a **flexible batch framework** with some extra functions. Also
 ## How it works
 
 The magic happens in `HarveyApplication` class, look at `run()` method first.
+
+TODO:
+- list phases, called methods
+- how to create new app
+- what to override (rawTaskIterator, e.g. to read System.in)
