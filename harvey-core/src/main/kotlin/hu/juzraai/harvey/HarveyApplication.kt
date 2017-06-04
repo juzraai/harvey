@@ -3,13 +3,15 @@ package hu.juzraai.harvey
 import com.beust.jcommander.JCommander
 import com.beust.jcommander.ParameterException
 import com.google.gson.Gson
-import hu.juzraai.harvey.cli.ArgumentsParser
-import hu.juzraai.harvey.cli.Configuration
-import hu.juzraai.harvey.cli.ConfigurationValidator
-import hu.juzraai.harvey.cli.PropertiesLoader
-import hu.juzraai.harvey.model.Batch
-import hu.juzraai.harvey.model.State
-import hu.juzraai.harvey.model.Task
+import com.j256.ormlite.misc.TransactionManager
+import hu.juzraai.harvey.conf.ArgumentsParser
+import hu.juzraai.harvey.conf.Configuration
+import hu.juzraai.harvey.conf.ConfigurationValidator
+import hu.juzraai.harvey.conf.PropertiesLoader
+import hu.juzraai.harvey.data.Batch
+import hu.juzraai.harvey.data.HarveyDao
+import hu.juzraai.harvey.data.State
+import hu.juzraai.harvey.data.Task
 import hu.juzraai.harvey.reader.TsvFileReader
 import hu.juzraai.toolbox.data.OrmLiteDatabase
 import hu.juzraai.toolbox.jdbc.ConnectionString
@@ -30,6 +32,7 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 	}
 
 	var configuration: Configuration = Configuration()
+	var dao: HarveyDao? = null
 	var database: OrmLiteDatabase? = null
 	var propertiesFile = File("application.yml")
 
@@ -51,6 +54,7 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 
 		initDatabaseConnection().use { db ->
 			database = db
+			dao = HarveyDao(database!!)
 			if (canStartWUI()) startWUI()
 			createDatabaseTables()
 			if (canImportTasks()) importTasks()
@@ -74,6 +78,16 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 		database?.createTables(*tablesToBeCreated())
 	}
 
+	protected open fun generateBatchRecord(batchId: String, task: Task): Batch {
+		val id = hash("$batchId/${task.id}")
+		return Batch(id, batchId, task)
+	}
+
+	protected open fun generateTaskRecord(map: Map<String, String>): Task {
+		val json = toJson(map)
+		return Task(hash(json), json)
+	}
+
 	protected open fun handleParameterException(e: ParameterException) {
 		println("[ERROR] ${e.message}\n")
 		JCommander.newBuilder()
@@ -88,17 +102,17 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 	protected open fun importTasks() {
 		with(configuration) {
 			logger.info("Importing tasks from {} for batch {}", tasksFile, batchId)
-			rawTaskIterator().forEach { map ->
-				val task = Task()
-				task.data = toJson(map)
-				task.id = hash(task.data)
-				// TODO store (insert ignore)
-
-				val batch = Batch()
-				batch.batchId = batchId!!
-				batch.task = task
-				// TODO store
+			var allTask = 0
+			var newTask = 0
+			TransactionManager.callInTransaction(database!!.connectionSource) {
+				rawTaskIterator().forEach { map ->
+					allTask++
+					val task = generateTaskRecord(map)
+					newTask += dao?.storeTask(task) ?: 0
+					dao?.storeBatch(generateBatchRecord(batchId!!, task))
+				}
 			}
+			logger.info("Imported {} tasks ({} new)", allTask, newTask)
 		}
 	}
 

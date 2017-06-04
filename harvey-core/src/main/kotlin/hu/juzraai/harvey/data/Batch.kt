@@ -1,4 +1,4 @@
-package hu.juzraai.harvey.model
+package hu.juzraai.harvey.data
 
 import com.j256.ormlite.field.DatabaseField
 import com.j256.ormlite.table.DatabaseTable
@@ -10,8 +10,8 @@ import hu.juzraai.toolbox.data.Indexed
  */
 @DatabaseTable(tableName = HarveyApplication.BATCH_TABLE_NAME)
 data class Batch(
-		@DatabaseField(generatedId = true)
-		var id: Long? = null,
+		@DatabaseField(id = true)
+		var id: String? = null,
 
 		@DatabaseField(canBeNull = false) @Indexed
 		var batchId: String = "",

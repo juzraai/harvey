@@ -1,9 +1,9 @@
 package hu.juzraai.harvey
 
 import com.beust.jcommander.ParameterException
-import hu.juzraai.harvey.cli.ArgumentsParser
-import hu.juzraai.harvey.cli.Configuration
-import hu.juzraai.harvey.cli.ConfigurationValidator
+import hu.juzraai.harvey.conf.ArgumentsParser
+import hu.juzraai.harvey.conf.Configuration
+import hu.juzraai.harvey.conf.ConfigurationValidator
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

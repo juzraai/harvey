@@ -1,4 +1,4 @@
-package hu.juzraai.harvey.model
+package hu.juzraai.harvey.data
 
 import com.j256.ormlite.dao.ForeignCollection
 import com.j256.ormlite.field.DatabaseField
@@ -24,4 +24,6 @@ class Task(
 
 		@ForeignCollectionField(eager = false)
 		var states: ForeignCollection<State>? = null
-)
+) {
+	constructor(id: String, data: String) : this(id, Date(), data, null)
+}

@@ -1,4 +1,4 @@
-package hu.juzraai.harvey.model
+package hu.juzraai.harvey.data
 
 import com.j256.ormlite.field.DatabaseField
 import com.j256.ormlite.table.DatabaseTable

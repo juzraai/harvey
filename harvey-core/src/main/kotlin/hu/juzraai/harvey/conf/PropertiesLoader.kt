@@ -1,4 +1,4 @@
-package hu.juzraai.harvey.cli
+package hu.juzraai.harvey.conf
 
 import java.io.File
 
