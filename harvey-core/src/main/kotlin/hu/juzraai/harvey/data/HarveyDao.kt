@@ -12,7 +12,7 @@ open class HarveyDao(val db: OrmLiteDatabase) {
 	companion object : KLogging()
 
 	val batchDao = db.dao(Batch::class.java) as Dao<Batch, String>
-	val stateDao = db.dao(State::class.java) as Dao<State, Long>
+	val stateDao = db.dao(State::class.java) as Dao<State, String>
 	val taskDao = db.dao(Task::class.java) as Dao<Task, String>
 
 	open fun storeBatch(batch: Batch) {

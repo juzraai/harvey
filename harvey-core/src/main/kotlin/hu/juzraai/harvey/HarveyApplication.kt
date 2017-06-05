@@ -149,6 +149,11 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 		PropertiesLoader().loadPropertiesFile(propertiesFile, configuration)
 	}
 
+	protected open fun loadTaskState(task: Task): State? {
+		val id = generateStateRecord(task, null, false).id
+		return dao?.stateDao?.queryForId(id)
+	}
+
 	protected open fun parseArguments() {
 		ArgumentsParser().parseArguments(args, configuration)
 	}
@@ -177,9 +182,7 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 		}
 	}
 
-	protected open fun rawTaskIterator(): Iterator<Map<String, String>> {
-		return TsvFileReader(configuration.tasksFile!!, true)
-	}
+	protected open fun rawTaskIterator(): Iterator<Map<String, String>> = TsvFileReader(configuration.tasksFile!!, true)
 
 	protected open fun saveTaskState(task: Task, rawState: Any?, finished: Boolean) {
 		val state = generateStateRecord(task, rawState, finished)

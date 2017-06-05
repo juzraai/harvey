@@ -1,6 +1,7 @@
 package hu.juzraai.harvey
 
 import hu.juzraai.harvey.data.Task
+import mu.KLogging
 
 fun main(args: Array<String>) {
 	printLogo()
@@ -19,14 +20,20 @@ fun printLogo() {
  */
 class DefaultHarveyApplication(args: Array<String>) : HarveyApplication(args) {
 
+	companion object : KLogging()
+
 	override fun crawlerId(): String = "default-crawler"
 
 	override fun crawlerVersion(): Int = 0
 
 	override fun process(task: Task) {
-		saveTaskState(task, null, true)
+		logger.info("Task {} state: {}", task.id, loadTaskState(task))
+		saveTaskState(task, null, false)
 	}
 
 	override fun tablesToBeCreated(): Array<Class<*>> = arrayOf()
+
+	override fun rawTaskIterator(): Iterator<Map<String, String>>
+			= super.rawTaskIterator()
 }
 

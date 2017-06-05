@@ -18,7 +18,7 @@ data class State(
 		@DatabaseField(canBeNull = false, columnName = "taskId", foreign = true) @Indexed
 		var task: Task? = null,
 
-		@DatabaseField(canBeNull = false)
+		@DatabaseField(canBeNull = false) @Indexed
 		var crawlerId: String = "",
 
 		@DatabaseField(canBeNull = false)
