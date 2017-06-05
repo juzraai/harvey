@@ -7,7 +7,7 @@ import mu.KLogging
 /**
  * @author Zsolt Jurányi
  */
-class HarveyDao(val db: OrmLiteDatabase) {
+open class HarveyDao(val db: OrmLiteDatabase) {
 
 	companion object : KLogging()
 
@@ -15,22 +15,22 @@ class HarveyDao(val db: OrmLiteDatabase) {
 	val stateDao = db.dao(State::class.java) as Dao<State, Long>
 	val taskDao = db.dao(Task::class.java) as Dao<Task, String>
 
-	fun storeBatch(batch: Batch) {
+	open fun storeBatch(batch: Batch) {
 		logger.trace("Storing batch: {}", batch)
 		batchDao.createIfNotExists(batch)
 	}
 
-	fun storeState(state: State) {
+	open fun storeState(state: State) {
 		logger.trace("Storing state: {}", state)
 		stateDao.createOrUpdate(state)
 	}
 
-	fun storeTask(task: Task): Int {
+	open fun storeTask(task: Task): Int {
 		logger.trace("Storing task: {}", task)
 		return if (taskDao.createIfNotExists(task).importedAt == task.importedAt) 1 else 0
 	}
 
-	fun tasksOfBatch(batchId: String): List<Task> {
+	open fun tasksOfBatch(batchId: String): List<Task> {
 		logger.debug("Fetching tasks of batch: {}", batchId)
 		val batch = batchDao.queryBuilder().where().eq("batchId", batchId).query()
 		return batch.map {

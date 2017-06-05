@@ -20,9 +20,55 @@ So it's basically a **flexible batch framework** with some extra functions. Also
 
 ## How it works
 
-The magic happens in `HarveyApplication` class, look at `run()` method first.
+The magic happens in `HarveyApplication` abstract class, look at `run()` method first. When you implement your application by extending this class, you must call `run()` in your main method to start the predefined mechanism. Let's see what it calls:
+
+```text
+run()
+
+    // Phase I.
+    // No logging, no database, just a `configuration` property to be set up
+    
+    loadPropertiesFile()                  // Loads configuration from file (not implemented)
+    parseArguments()                      // Loads configuration from args
+    validateConfiguration()               // Validates configuration
+    handleParameterException()            // Prints out error and usage if needed
+    setupLogging()                        // Sets up logger framework
+    
+    // Phase II.
+    // Logging's on, `database` and `dao` field is set up after first call
+    
+    database = initDatabaseConnection()   // Sets up MySQL connection (OrmLiteDatabase)
+    dao = initDao()                       // Instantiates `dao`
+    if (canStartWUI()) startWUI()         // Starts WUI if possible (not implemented)
+    createDatabaseTables()                // Creates system tables and child application's
+        tablesToBeCreated()               //     tables returned by this abstract method
+    if (canImportTasks()) importTasks()   // Imports tasks if got filename
+        rawTaskIterator()                 // Reads Maps from a TSV file
+        generateTaskRecord(Map)           // Generates a Task object
+        dao.storeTask(Task)               // Saves Task record
+        generateBatchRecord(String, Task) // Generates a Batch object
+        dao.storeBatch(Batch)             // Saves Batch record
+    processTasks()
+        dao.tasksOfBatch(String)          // Queries all tasks of given batch
+        alreadyProcessed(Task)            // Tasks that already processed will be skipped
+        process(Task)                     // The abstract method which does what you want
+            saveState(Task, Any, Boolean) //     You can call this to save a task's state
+```
+
+All of the above methods are declared as `protected open` functions so you can freely override them in your implementation. Methods of `HarveyApplication` have access to `database` and `dao` properties which are guaranteed to be non-null after the 2 `initD*` method calls.
+
+`database` is currently an `OrmLiteDatabase` object from *[Toolbox](https://github.com/juzraai/toolbox)*, while `dao` is a `HarveyDao` implemented by `harvey-core`.
+
+Command line arguments are parsed by *[JCommander](http://jcommander.org/)*.
+
+
+
+## What will come
+
+* default properties file loading mechanism (inspired by *Spring Boot*)
+* default WUI which aims to provide progress information and batch/task browsing
+* `database` and `dao` should be implemented in a more flexible way, with an interface
 
 TODO:
-- list phases, called methods
 - how to create new app
 - what to override (rawTaskIterator, e.g. to read System.in)

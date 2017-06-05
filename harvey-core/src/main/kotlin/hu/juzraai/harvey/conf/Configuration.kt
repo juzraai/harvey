@@ -49,5 +49,6 @@ data class Configuration(
 
 		// TODO force reprocessing? -f? -F?
 		// TODO input format? -f?
+		// TODO thread count? -T?
 		// TODO option for reading b/c/t from a dir
 )

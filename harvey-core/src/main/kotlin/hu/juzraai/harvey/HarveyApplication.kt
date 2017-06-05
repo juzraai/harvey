@@ -52,9 +52,9 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 		// Now with logging and database
 
 		logger.info("Harvey's starting")
-		initDatabaseConnection().use { db ->
-			database = db
-			dao = HarveyDao(database!!)
+		database = initDatabaseConnection()
+		database.use {
+			dao = initDao()
 			if (canStartWUI()) startWUI()
 			createDatabaseTables()
 			if (canImportTasks()) importTasks()
@@ -129,6 +129,8 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 			logger.info("Imported {} tasks ({} new)", allTask, newTask)
 		}
 	}
+
+	protected open fun initDao() = HarveyDao(database!!)
 
 	protected open fun initDatabaseConnection(): OrmLiteDatabase {
 		with(configuration) {
