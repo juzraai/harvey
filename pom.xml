@@ -26,6 +26,7 @@
 	</repositories>
 
 	<modules>
+		<module>harvey-app-starter</module>
 		<module>harvey-core</module>
 		<module>harvey-util</module>
 	</modules>

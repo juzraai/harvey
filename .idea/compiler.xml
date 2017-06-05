@@ -12,6 +12,7 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="harvey" target="1.5" />
+      <module name="harvey-app-starter" target="1.5" />
       <module name="harvey-core" target="1.5" />
       <module name="harvey-parent" target="1.5" />
       <module name="harvey-util" target="1.5" />
