@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>com.github.juzraai.maven-parents</groupId>
 		<artifactId>kotlin-project</artifactId>
-		<version>1.1.1</version>
+		<version>1.2</version>
 	</parent>
 
 	<groupId>hu.juzraai.harvey</groupId>

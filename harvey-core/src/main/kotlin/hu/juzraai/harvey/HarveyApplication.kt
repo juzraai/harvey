@@ -171,12 +171,11 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 				logger.info("Processing {} tasks of batch {}", size, batchId!!)
 			}?.forEach({ task ->
 				logger.trace("Processing task: {}", task)
-				process(task)
-				// TODO return success?
-				// TODO pass delegated object for calling usual db ops?
-				// TODO or return output record ID?
-
-				// TODO IMPORTANT: catch exception of process()!
+				try {
+					process(task)
+				} catch(e: Exception) {
+					logger.warn("Processing of task ${task.id} failed - ${e.message}", e)
+				}
 			})
 			// TODO parallel processing?
 		}

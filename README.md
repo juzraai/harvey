@@ -6,7 +6,10 @@
 
 
 
-## Goal / Use case
+## 1. About
+
+
+### 1.1. Goal / Use case
 
 In work I often have the task of searching for the same input on similar websites. Usually I create an application which **reads an input file (e.g. TSV)** and crawls the relevant parts of the site. The input files have almost the same columns and the applications are very similar too.
 
@@ -14,11 +17,10 @@ In work I often have the task of searching for the same input on similar website
 
 It can **save each task's state:** when it was processed, with which version of your crawler implementation. Also *Harvey* can skip automatically those tasks which were already processed by the current version.
 
-So it's basically a **flexible batch framework** with some extra functions. Also it aims to fit **>>my<<** needs. :-)
+So basically it's sort of a **batch framework** but specialized to **my** needs.
 
 
-
-## How it works
+### 1.2. How it works
 
 The magic happens in `HarveyApplication` abstract class, look at `run()` method first. When you implement your application by extending this class, you must call `run()` in your main method to start the predefined mechanism. Let's see what it calls:
 
@@ -63,19 +65,19 @@ All of the above methods are declared as `protected open` functions so you can f
 Command line arguments are parsed by *[JCommander](http://jcommander.org/)*.
 
 
-
-## What will come
+### 1.3. What will come
 
 * default properties file loading mechanism (inspired by *Spring Boot*)
 * default WUI which aims to provide progress information and batch/task browsing
 * `database` and `dao` should be implemented in a more flexible way, with an interface
+* parallel processing
 
 
 
-## Cookbook
+## 2. Cookbook
 
 
-### Creating a *Harvey* application
+### 2.1. Creating a *Harvey* application
 
 1. Clone/download the source code
 2. Call `mvn clean install` from the root directory of the source code
@@ -98,7 +100,7 @@ Command line arguments are parsed by *[JCommander](http://jcommander.org/)*.
 </properties>
 ```
 
-Alternatively, if you need to have another parent project, or you only need some parts of *Harvey*, you can just add the modules as dependencies:
+If you need to have another parent project, or you only need some parts of *Harvey*, you can just add the modules as dependencies:
 
 ```xml
 <dependencies>
@@ -126,7 +128,7 @@ fun main(args: Array<String>) {
 ```
 
 
-### What you have to implement
+### 2.2. What you have to implement
 
 * `crawlerId(): String`: This method should return a short string which can identify your application.
 * `crawlerVersion(): Int`: This method should return your application's revision number. This is used alongside with `crawlerId` to determine whether a task is already processed by the current application version. So, if you modify something and want to re-process your tasks, increase this number.
@@ -136,14 +138,15 @@ fun main(args: Array<String>) {
 In `process` method, you can call `saveTaskState(Task, Any?, Boolean)` which saves a state for the given task. You can use this later e.g. to resume processing of a task (`loadTaskState(Task)` can help). The 2nd argument is the state information which is up to you (it can be anything, even `null`). If the 3rd argument is `true`, then the task will be marked as *processed* (so will be skipped next time).
   
 
-### What you can override
+### 2.3. What you can override
 
 Basically any method listed far above. :D
 
 
-### What you may want to override
+### 2.4. What you may want to override
 
-**rawTaskIterator**
+
+#### 2.4.1. `rawTaskIterator()`
 
 Its default implementation is:
 
@@ -161,4 +164,4 @@ override fun rawTaskIterator(): Iterator<Map<String, String>>
 override fun canImportTasks(): Boolean = true
 ```
 
-As you can see, `canImportTasks()` needs to be overriden in this case, because its default behaviour is to check whether the configuration contains a tasks filename.
+As you can see, `canImportTasks()` also needs to be overriden in this case, because its default behaviour is to check whether the configuration contains a tasks filename.
