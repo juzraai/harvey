@@ -145,12 +145,12 @@ If you need to have another parent project, or you only need some parts of *Harv
 	<dependency>
 		<groupId>hu.juzraai.harvey</groupId>
 		<artifactId>harvey-core</artifactId>
-		<version>1.0-SNAPSHOT</version>
+		<version>VERSION</version>
 	</dependency>
 	<dependency>
 		<groupId>hu.juzraai.harvey</groupId>
 		<artifactId>harvey-util</artifactId>
-		<version>1.0-SNAPSHOT</version>
+		<version>VERSION</version>
 	</dependency>
 	...
 </dependencies>

@@ -16,6 +16,10 @@
 
 	<name>harvey-app-example</name>
 
+	<properties>
+		<main.class>hu.juzraai.harvey.example.MainKt</main.class>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.jsoup</groupId>
