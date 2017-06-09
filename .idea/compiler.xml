@@ -6,12 +6,14 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="harvey-app-example" />
         <module name="harvey-core" />
         <module name="harvey-util" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="harvey" target="1.5" />
+      <module name="harvey-app-example" target="1.5" />
       <module name="harvey-app-starter" target="1.5" />
       <module name="harvey-core" target="1.5" />
       <module name="harvey-parent" target="1.5" />

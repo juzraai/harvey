@@ -69,8 +69,46 @@ Command line arguments are parsed by *[JCommander](http://jcommander.org/)*.
 
 * default properties file loading mechanism (inspired by *Spring Boot*)
 * default WUI which aims to provide progress information and batch/task browsing
-* `database` and `dao` should be implemented in a more flexible way, with an interface
+* `database` and `dao` should be implemented in a more flexible way, with an interface (a single one?)
 * parallel processing
+* also planning HTTP client (on top of Jsoup) and other goodies
+
+
+### 1.4. Project structure
+
+* `harvey` is the root module which only contains a POM definition. It has 2 purposes:
+	* Other modules are referenced here, so calling `mvn install` on this root POM will build and install them.
+	* Refers to `maven-parents/kotlin-project` as parent. And because modules reference `harvey` as parent, they inherit settings defined in `kotlin-project` (e.g. dependency versions, build plugin config).
+* `harvey-util` contains reusable utility classes which would have place in `toolbox` too if it were a Kotlin project :D
+* `harvey-core` defines the soul of *Harvey*. It depends on `harvey-util`.
+* `harvey-app-starter` can be used as a parent in your application, it adds `harvey-core` and `harvey-util` as dependencies.
+* `harvey-app-example` is a sample program which shows you how to create a *Harvey* application.
+
+```text
+           [ kotlin-project ]
+                   ^
+maven-parents/     |
+...................|......................................
+harvey/            |
+                   | parent
+                   |
+    +-------- [ harvey ] <--------+
+    |                             |
+    |                             | 
+ b  +-----> [ harvey-util ] ------+  p
+ u  |              ^              |  a
+ i  |              | dep          |  r
+ l  |              |              |  e
+ d  +-----> [ harvey-core ] ------+  n
+    |              ^              |  t
+    |              | dep          |
+    |              |              |
+    +--> [ harvey-app-starter ] --+
+    |              ^
+    |              | parent
+    |              |
+    +--> [ harvey-app-example ]
+```
 
 
 
