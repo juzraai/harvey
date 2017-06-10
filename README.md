@@ -88,20 +88,20 @@ Command line arguments are parsed by *[JCommander](http://jcommander.org/)*.
            [ kotlin-project ]
                    ^
 maven-parents/     |
-...................|......................................
+...................|....................
 harvey/            |
                    | parent
                    |
     +-------- [ harvey ] <--------+
     |                             |
     |                             | 
- b  +-----> [ harvey-util ] ------+  p
- u  |              ^              |  a
- i  |              | dep          |  r
- l  |              |              |  e
- d  +-----> [ harvey-core ] ------+  n
-    |              ^              |  t
-    |              | dep          |
+    +-----> [ harvey-util ] ------+  p
+    |              ^              |  a
+ b  |              | dep          |  r
+ u  |              |              |  e
+ i  +-----> [ harvey-core ] ------+  n
+ l  |              ^              |  t
+ d  |              | dep          |
     |              |              |
     +--> [ harvey-app-starter ] --+
     |              ^
@@ -165,6 +165,9 @@ fun main(args: Array<String>) {
 }
 ```
 
+**You can find a working example in `harvey-app-example` directory. ;)**
+
+
 
 ### 2.2. What you have to implement
 
@@ -184,7 +187,23 @@ Basically any method listed far above. :D
 ### 2.4. What you may want to override
 
 
-#### 2.4.1. `rawTaskIterator()`
+#### 2.4.1. Inserting before/after methods
+
+*Harvey* doesn't declare overrideable pre/post methods, because there would be a lot of them. Instead you can just override an existing method and do your stuff before/after calling `super`. For example, check `harvey-app-example`'s `postProcess` function:
+
+```kotlin
+override fun processTasks() {
+	super.processTasks()
+	postProcess()
+}
+
+private fun postProcess() {
+	// do something e.g. with `database`
+}
+```
+
+
+#### 2.4.2. `rawTaskIterator()`
 
 Its default implementation is:
 
@@ -203,3 +222,5 @@ override fun canImportTasks(): Boolean = true
 ```
 
 As you can see, `canImportTasks()` also needs to be overriden in this case, because its default behaviour is to check whether the configuration contains a tasks filename.
+
+`harvey-app-example` shows a similar sample but it reads from a resource file, check it out!

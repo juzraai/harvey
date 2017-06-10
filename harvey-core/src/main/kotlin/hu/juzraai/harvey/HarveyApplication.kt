@@ -167,8 +167,8 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 				if (ap) logger.trace("Skipping task: {}", task)
 				!ap
 			}?.apply {
-				logger.debug("Batch {} has {} tasks, {} will be processed", batchId!!, tasks?.size ?: 0, size)
-				logger.info("Processing {} tasks of batch {}", size, batchId!!)
+				logger.debug("Batch {} has {} tasks, {} will be processed", batchId, tasks.size, size)
+				logger.info("Processing {} tasks of batch {}", size, batchId)
 			}?.forEach({ task ->
 				logger.trace("Processing task: {}", task)
 				try {

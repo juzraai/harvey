@@ -1,7 +1,6 @@
 package hu.juzraai.harvey.example
 
 import com.google.gson.Gson
-import com.j256.ormlite.dao.Dao
 import hu.juzraai.harvey.HarveyApplication
 import hu.juzraai.harvey.data.Task
 import hu.juzraai.harvey.example.core.WikiPageFetcher
@@ -54,9 +53,8 @@ class ExampleHarveyApp(args: Array<String>) : HarveyApplication(args) {
 	}
 
 	private fun postProcess() {
-		val dao = database!!.dao(Artist::class.java) as Dao<Artist, String>
+		val dao = database!!.dao(Artist::class.java)
 		dao.forEach { artist ->
-			dao.refresh(artist) // query genres too
 			println("\nArtist: ${artist.name}")
 			println("Genres:")
 			artist.genres?.forEach { println("\t - ${it.genre}") }
