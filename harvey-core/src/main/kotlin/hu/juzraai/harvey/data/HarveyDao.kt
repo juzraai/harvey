@@ -7,6 +7,7 @@ import mu.KLogging
 /**
  * @author Zsolt Jurányi
  */
+@Suppress("UNCHECKED_CAST")
 open class HarveyDao(val db: OrmLiteDatabase) {
 
 	companion object : KLogging()
