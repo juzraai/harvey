@@ -64,8 +64,19 @@ All of the above methods are declared as `protected open` functions so you can f
 
 Command line arguments are parsed by *[JCommander](http://jcommander.org/)*.
 
+About *Harvey*'s data:
 
-### 1.3. What will come
+* `Task` ID is a hash of the raw task record's JSON string.
+* `Batch` record stores (taskID, batchID) pairs actually. Batch record's own ID is a hash of the batch ID + task ID.
+* `State` ID is the hash of taskID + crawlerID + crawler version. The `Any?` parameter passed to `saveTaskState` will be transformed into a JSON string.
+
+So:
+
+* A task can be in any number of batches. Batches can contain any number of tasks.
+* A state describes a task's processing state with one crawler's one version.
+
+
+### 1.3. What will come (TODO)
 
 * default properties file loading mechanism (inspired by *Spring Boot*)
 * default WUI which aims to provide progress information and batch/task browsing
