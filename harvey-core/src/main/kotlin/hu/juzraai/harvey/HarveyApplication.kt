@@ -173,6 +173,7 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 				logger.trace("Processing task: {}", task)
 				try {
 					process(task)
+					// TODO somehow we should store task-result ID connection (N-M)
 				} catch(e: Exception) {
 					logger.warn("Processing of task ${task.id} failed - ${e.message}", e)
 				}

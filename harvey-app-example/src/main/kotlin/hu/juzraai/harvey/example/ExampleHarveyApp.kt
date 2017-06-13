@@ -1,8 +1,12 @@
 package hu.juzraai.harvey.example
 
+import com.beust.jcommander.JCommander
+import com.beust.jcommander.ParameterException
 import com.google.gson.Gson
 import hu.juzraai.harvey.HarveyApplication
+import hu.juzraai.harvey.conf.ArgumentsParser
 import hu.juzraai.harvey.data.Task
+import hu.juzraai.harvey.example.conf.MyConfiguration
 import hu.juzraai.harvey.example.core.WikiPageFetcher
 import hu.juzraai.harvey.example.core.WikiPageParser
 import hu.juzraai.harvey.example.data.Artist
@@ -18,6 +22,8 @@ class ExampleHarveyApp(args: Array<String>) : HarveyApplication(args) {
 
 	companion object : KLogging()
 
+	var myConfiguration = MyConfiguration()
+
 	private fun artistGenre(artist: Artist, genre: String) = ArtistGenre(hash("${artist.id}+$genre"), artist, genre)
 
 	override fun canImportTasks(): Boolean = true // because we read from resource, don't need `-t`
@@ -28,6 +34,20 @@ class ExampleHarveyApp(args: Array<String>) : HarveyApplication(args) {
 
 	private val wikiPageFetcher = WikiPageFetcher()
 
+	override fun handleParameterException(e: ParameterException) {
+		println("[ERROR] ${e.message}\n")
+		JCommander.newBuilder()
+				.programName("harvey-app")
+				.addObject(MyConfiguration())
+				.build()
+				.usage()
+	}
+
+	override fun parseArguments() {
+		ArgumentsParser().parseArguments(args, myConfiguration)
+		configuration = myConfiguration.harveyConfiguration
+	}
+
 	override fun process(task: Task) {
 		saveTaskState(task, TaskState("mapping"), false)
 		val artist: Artist = Gson().fromJson(task.data, Artist::class.java)
@@ -36,6 +56,14 @@ class ExampleHarveyApp(args: Array<String>) : HarveyApplication(args) {
 		database!!.store(artist)
 
 		saveTaskState(task, TaskState("crawling wiki page"), false)
+
+		with(myConfiguration) {
+			if (sleep > 0) {
+				logger.debug("Sleeping {} sec", sleep)
+				Thread.sleep(sleep * 1000L)
+			}
+		}
+
 		val doc = wikiPageFetcher.fetchPageFor(artist.name)
 		val artistGenres = mutableListOf<ArtistGenre>()
 		val genres = WikiPageParser(doc).parseListFromInfoBox("Genres")
@@ -69,4 +97,9 @@ class ExampleHarveyApp(args: Array<String>) : HarveyApplication(args) {
 			Artist::class.java,
 			ArtistGenre::class.java
 	)
+
+	override fun validateConfiguration() {
+		super.validateConfiguration()
+		if (myConfiguration.sleep < 0) throw ParameterException("Sleep must be non-negative !")
+	}
 }

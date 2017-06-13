@@ -235,3 +235,55 @@ override fun canImportTasks(): Boolean = true
 As you can see, `canImportTasks()` also needs to be overriden in this case, because its default behaviour is to check whether the configuration contains a tasks filename.
 
 `harvey-app-example` shows a similar sample but it reads from a resource file, check it out!
+
+
+#### 2.4.3. Custom arguments
+
+You may need to add your own configuration parameters as command line arguments. You need to do these steps:
+
+1. Create a new class for the model and include a *Harvey* configuration field:
+
+```kotlin
+data class MyConfiguration(
+	@ParameterDelegate
+	var harveyConfiguration: Configuration = Configuration(),
+	
+	@Parameter(...)
+	var yourParameter: Any
+)
+```
+
+2. Override `parseArguments` to parse into your model:
+
+```kotlin
+override fun parseArguments() {
+	ArgumentsParser().parseArguments(args, myConfiguration)
+	configuration = myConfiguration.harveyConfiguration
+	// `configuration` is used by internal methods 
+	// so it needs to be updated :)
+}
+```
+
+3. Override `validateConfiguration` to be able to verify parsed values:
+
+```kotlin
+override fun validateConfiguration() {
+	super.validateConfiguration()
+	with (myConfiguration) {
+		// TODO validate your fields
+	}
+}
+```
+
+4. Override `handleParameterException` to print proper usage info when needed:
+
+```kotlin
+override fun handleParameterException(e: ParameterException) {
+	println("[ERROR] ${e.message}\n")
+	JCommander.newBuilder()
+			.programName("harvey-app")
+			.addObject(MyConfiguration()) // <--- your model's default instance
+			.build()
+			.usage()
+}
+```
