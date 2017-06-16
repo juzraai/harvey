@@ -241,49 +241,32 @@ As you can see, `canImportTasks()` also needs to be overriden in this case, beca
 
 You may need to add your own configuration parameters as command line arguments. You need to do these steps:
 
-1. Create a new class for the model and include a *Harvey* configuration field:
+1. Create a new class for the model which include a *Harvey* configuration field and implements `HarveyConfigurationProvider`:
 
 ```kotlin
-data class MyConfiguration(
+data class YourConfiguration(
 	@ParameterDelegate
 	var harveyConfiguration: Configuration = Configuration(),
 	
 	@Parameter(...)
 	var yourParameter: Any
-)
-```
+) : HarveyConfigurationProvider {
 
-2. Override `parseArguments` to parse into your model:
-
-```kotlin
-override fun parseArguments() {
-	ArgumentsParser().parseArguments(args, myConfiguration)
-	configuration = myConfiguration.harveyConfiguration
-	// `configuration` is used by internal methods 
-	// so it needs to be updated :)
-}
-```
-
-3. Override `validateConfiguration` to be able to verify parsed values:
-
-```kotlin
-override fun validateConfiguration() {
-	super.validateConfiguration()
-	with (myConfiguration) {
-		// TODO validate your fields
+	override fun harveyConfiguration(): HarveyConfiguration {
+		return harveyConfiguration
 	}
 }
 ```
 
-4. Override `handleParameterException` to print proper usage info when needed:
+*Harvey* will call *JCommander* to parse the whole model, then *Harvey* will use only the object return by the function above.
+
+2. Override `validateConfiguration` to be able to verify parsed values:
 
 ```kotlin
-override fun handleParameterException(e: ParameterException) {
-	println("[ERROR] ${e.message}\n")
-	JCommander.newBuilder()
-			.programName("harvey-app")
-			.addObject(MyConfiguration()) // <--- your model's default instance
-			.build()
-			.usage()
+override fun validateConfiguration() {
+	super.validateConfiguration() // validates configuration.harveyConfigration()
+	with (yourConfiguration) {
+		// TODO validate your fields
+	}
 }
 ```

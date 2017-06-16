@@ -1,10 +1,9 @@
 package hu.juzraai.harvey.example
 
-import com.beust.jcommander.JCommander
 import com.beust.jcommander.ParameterException
 import com.google.gson.Gson
 import hu.juzraai.harvey.HarveyApplication
-import hu.juzraai.harvey.conf.ArgumentsParser
+import hu.juzraai.harvey.conf.HarveyConfigurationProvider
 import hu.juzraai.harvey.data.Task
 import hu.juzraai.harvey.example.conf.MyConfiguration
 import hu.juzraai.harvey.example.core.WikiPageFetcher
@@ -34,19 +33,7 @@ class ExampleHarveyApp(args: Array<String>) : HarveyApplication(args) {
 
 	private val wikiPageFetcher = WikiPageFetcher()
 
-	override fun handleParameterException(e: ParameterException) {
-		println("[ERROR] ${e.message}\n")
-		JCommander.newBuilder()
-				.programName("harvey-app")
-				.addObject(MyConfiguration())
-				.build()
-				.usage()
-	}
-
-	override fun parseArguments() {
-		ArgumentsParser().parseArguments(args, myConfiguration)
-		configuration = myConfiguration.harveyConfiguration
-	}
+	override fun defaultConfiguration(): HarveyConfigurationProvider = MyConfiguration()
 
 	override fun process(task: Task) {
 		saveTaskState(task, TaskState("mapping"), false)
@@ -76,6 +63,8 @@ class ExampleHarveyApp(args: Array<String>) : HarveyApplication(args) {
 	}
 
 	override fun processTasks() {
+		println("CONFIG: $configuration")
+		println("H-CONF: $harveyConfiguration")
 		super.processTasks()
 		postProcess()
 	}

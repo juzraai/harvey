@@ -4,9 +4,9 @@ import com.beust.jcommander.JCommander
 import com.beust.jcommander.ParameterException
 import com.j256.ormlite.misc.TransactionManager
 import hu.juzraai.harvey.conf.ArgumentsParser
-import hu.juzraai.harvey.conf.Configuration
 import hu.juzraai.harvey.conf.ConfigurationValidator
-import hu.juzraai.harvey.conf.PropertiesLoader
+import hu.juzraai.harvey.conf.HarveyConfiguration
+import hu.juzraai.harvey.conf.HarveyConfigurationProvider
 import hu.juzraai.harvey.data.Batch
 import hu.juzraai.harvey.data.HarveyDao
 import hu.juzraai.harvey.data.State
@@ -30,7 +30,8 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 		const val TASK_TABLE_NAME = TABLE_PREFIX + "task"
 	}
 
-	var configuration: Configuration = Configuration()
+	var configuration: HarveyConfigurationProvider = defaultConfiguration()
+	var harveyConfiguration = configuration.harveyConfiguration()
 	var dao: HarveyDao? = null
 	var database: OrmLiteDatabase? = null
 	var propertiesFile = File("application.yml")
@@ -71,9 +72,10 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 						&& null != it.processedAt
 			} ?: false
 
-	protected open fun canImportTasks(): Boolean = !configuration.tasksFile.isNullOrBlank()
 
-	protected open fun canStartWUI(): Boolean = null != configuration.wuiPort
+	protected open fun canImportTasks(): Boolean = !harveyConfiguration.tasksFile.isNullOrBlank()
+
+	protected open fun canStartWUI(): Boolean = null != harveyConfiguration.wuiPort
 
 	protected open fun createDatabaseTables() {
 		logger.debug("Creating database tables")
@@ -84,6 +86,8 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 		)
 		database?.createTables(*tablesToBeCreated())
 	}
+
+	protected open fun defaultConfiguration(): HarveyConfigurationProvider = HarveyConfiguration()
 
 	protected open fun generateBatchRecord(batchId: String, task: Task): Batch {
 		val id = hash("$batchId/${task.id}")
@@ -106,7 +110,7 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 		println("[ERROR] ${e.message}\n")
 		JCommander.newBuilder()
 				.programName("harvey-app")
-				.addObject(Configuration())
+				.addObject(defaultConfiguration())
 				.build()
 				.usage()
 	}
@@ -114,7 +118,7 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 	protected open fun hash(input: String): String = StringUtils.toSha1Base64String(input)
 
 	protected open fun importTasks() {
-		with(configuration) {
+		with(harveyConfiguration) {
 			logger.info("Importing tasks from {} for batch {}", tasksFile, batchId)
 			var allTask = 0
 			var newTask = 0
@@ -133,7 +137,7 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 	protected open fun initDao() = HarveyDao(database!!)
 
 	protected open fun initDatabaseConnection(): OrmLiteDatabase {
-		with(configuration) {
+		with(harveyConfiguration) {
 			logger.info("Initializing database connection {}@{}/{}", databaseUser, databaseHost, databaseName)
 			val cs = ConnectionString.MYSQL()
 					.host(databaseHost)
@@ -146,7 +150,7 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 	}
 
 	protected open fun loadPropertiesFile() {
-		PropertiesLoader().loadPropertiesFile(propertiesFile, configuration)
+		//PropertiesLoader().loadPropertiesFile(propertiesFile, configuration)
 	}
 
 	protected open fun loadTaskState(task: Task): State? {
@@ -159,7 +163,7 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 	}
 
 	protected open fun processTasks() {
-		with(configuration) {
+		with(harveyConfiguration) {
 			val tasks = dao?.tasksOfBatch(batchId!!)
 			logger.debug("Fetching tasks to process")
 			tasks?.filter { task ->
@@ -182,7 +186,7 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 		}
 	}
 
-	protected open fun rawTaskIterator(): Iterator<Map<String, String>> = TsvFileReader(configuration.tasksFile!!, true)
+	protected open fun rawTaskIterator(): Iterator<Map<String, String>> = TsvFileReader(harveyConfiguration.tasksFile!!, true)
 
 	protected open fun saveTaskState(task: Task, rawState: Any?, finished: Boolean) {
 		val state = generateStateRecord(task, rawState, finished)
@@ -195,7 +199,7 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 	}
 
 	protected open fun setupLogging() {
-		val level = arrayOf(Level.OFF, Level.ERROR, Level.WARN, Level.INFO, Level.DEBUG, Level.TRACE)[configuration.verbosity]
+		val level = arrayOf(Level.OFF, Level.ERROR, Level.WARN, Level.INFO, Level.DEBUG, Level.TRACE)[harveyConfiguration.verbosity]
 		LoggerSetup.level(Level.OFF) // muting other libs
 		LoggerSetup.level("hu.juzraai.harvey", level)
 		if (Level.OFF != level) LoggerSetup.outputOnlyToConsole()

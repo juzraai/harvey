@@ -2,8 +2,8 @@ package hu.juzraai.harvey
 
 import com.beust.jcommander.ParameterException
 import hu.juzraai.harvey.conf.ArgumentsParser
-import hu.juzraai.harvey.conf.Configuration
 import hu.juzraai.harvey.conf.ConfigurationValidator
+import hu.juzraai.harvey.conf.HarveyConfiguration
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -15,8 +15,8 @@ open class ConfigurationValidatorTest {
 	var parser = ArgumentsParser()
 	var validator = ConfigurationValidator()
 
-	private fun parse(args: String): Configuration {
-		val configuration = Configuration()
+	private fun parse(args: String): HarveyConfiguration {
+		val configuration = HarveyConfiguration()
 		parser.parseArguments(args.split(' ').toTypedArray(), configuration)
 		validator.validateConfiguration(configuration)
 		return configuration

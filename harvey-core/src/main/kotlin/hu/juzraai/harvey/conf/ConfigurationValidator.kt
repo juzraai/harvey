@@ -10,8 +10,8 @@ open class ConfigurationValidator {
 
 	// TODO later: no -b but -w for global WUI
 
-	open fun validateConfiguration(configuration: Configuration) {
-		with(configuration) {
+	open fun validateConfiguration(configuration: HarveyConfigurationProvider) {
+		with(configuration.harveyConfiguration()) {
 			validateBatchId(batchId)
 			validateConfigFile(configFile)
 			validateDatabaseName(databaseName)

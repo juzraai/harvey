@@ -6,7 +6,7 @@ import com.beust.jcommander.Parameter
 /**
  * @author Zsolt Jurányi
  */
-data class Configuration(
+data class HarveyConfiguration(
 
 		@Parameter(names = arrayOf("-b", "--batch-id"),
 				description = "ID of the batch (task group). If you additionally specify a tasks file (-t), those tasks will be stored with this batch ID. Otherwise, tasks will be queried from the database using this batch ID.")
@@ -51,4 +51,9 @@ data class Configuration(
 		// TODO input format? -f?
 		// TODO thread count? -T?
 		// TODO option for reading b/c/t from a dir
-)
+) : HarveyConfigurationProvider {
+
+	override fun harveyConfiguration(): HarveyConfiguration {
+		return this
+	}
+}
