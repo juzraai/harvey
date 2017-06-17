@@ -29,16 +29,16 @@ run()
 
     // Phase I.
     // No logging, no database, just a `configuration` property to be set up
-    
+
     loadPropertiesFile()                       // Loads configuration from file (not implemented)
     parseArguments()                           // Loads configuration from args
     validateConfiguration()                    // Validates configuration
     handleParameterException()                 // Prints out error and usage if needed
     setupLogging()                             // Sets up logger framework
-    
+
     // Phase II.
     // Logging's on, `database` and `dao` field is set up after first call
-    
+
     database = initDatabaseConnection()        // Sets up MySQL connection (OrmLiteDatabase)
     dao = initDao()                            // Instantiates `dao`
     if (canStartWUI()) startWUI()              // Starts WUI if possible (not implemented)
@@ -105,7 +105,7 @@ harvey/            |
                    |
     +-------- [ harvey ] <--------+
     |                             |
-    |                             | 
+    |                             |
     +-----> [ harvey-util ] ------+  p
     |              ^              |  a
  b  |              | dep          |  r
@@ -135,7 +135,7 @@ harvey/            |
 ```xml
 <parent>
 	<groupId>hu.juzraai.harvey</groupId>
-	<artifactId>harvey-app-starter</artifactId>	
+	<artifactId>harvey-app-starter</artifactId>
 	<version>VERSION</version>
 </parent>
 ```
@@ -188,7 +188,7 @@ fun main(args: Array<String>) {
 * `process(Task)`: You can implement the most important thing here, what you want to do with the tasks.
 
 In `process` method, you can call `saveTaskState(Task, Any?, Boolean)` which saves a state for the given task. You can use this later e.g. to resume processing of a task (`loadTaskState(Task)` can help). The 2nd argument is the state information which is up to you (it can be anything, even `null`). If the 3rd argument is `true`, then the task will be marked as *processed* (so will be skipped next time).
-  
+
 
 ### 2.3. What you can override
 
@@ -220,15 +220,15 @@ Its default implementation is:
 
 ```kotlin
 protected open fun rawTaskIterator(): Iterator<Map<String, String>>
-	= TsvFileReader(configuration.tasksFile!!, true)
+	= TsvFileReader(harveyConfiguration.tasksFile!!, true)
 ```
 
 You may need to read from the standard input instead:
 
 ```kotlin
-override fun rawTaskIterator(): Iterator<Map<String, String>> 
+override fun rawTaskIterator(): Iterator<Map<String, String>>
 	= TsvFileReader(System.`in`, true)
-		
+
 override fun canImportTasks(): Boolean = true
 ```
 
@@ -246,8 +246,8 @@ You may need to add your own configuration parameters as command line arguments.
 ```kotlin
 data class YourConfiguration(
 	@ParameterDelegate
-	var harveyConfiguration: Configuration = Configuration(),
-	
+	var harveyConfiguration: HarveyConfiguration = HarveyConfiguration(),
+
 	@Parameter(...)
 	var yourParameter: Any
 ) : HarveyConfigurationProvider {
@@ -258,14 +258,20 @@ data class YourConfiguration(
 }
 ```
 
-*Harvey* will call *JCommander* to parse the whole model, then *Harvey* will use only the object return by the function above.
+2. Override `defaultConfiguration` to return your model:
 
-2. Override `validateConfiguration` to be able to verify parsed values:
+```kotlin
+override fun defaultConfiguration(): HarveyConfigurationProvider = YourConfiguration()
+```
+
+*Harvey* will call *JCommander* to parse the whole model, then *Harvey* will use only `configuration.harveyConfigration()` in internal methods.
+
+3. Override `validateConfiguration` to be able to verify parsed values:
 
 ```kotlin
 override fun validateConfiguration() {
 	super.validateConfiguration() // validates configuration.harveyConfigration()
-	with (yourConfiguration) {
+	with (configuration) {
 		// TODO validate your fields
 	}
 }
