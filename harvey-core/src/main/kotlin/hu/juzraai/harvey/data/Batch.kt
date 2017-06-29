@@ -1,9 +1,9 @@
 package hu.juzraai.harvey.data
 
-import com.j256.ormlite.field.DatabaseField
-import com.j256.ormlite.table.DatabaseTable
-import hu.juzraai.harvey.HarveyApplication
-import hu.juzraai.toolbox.data.Indexed
+import com.j256.ormlite.field.*
+import com.j256.ormlite.table.*
+import hu.juzraai.harvey.*
+import hu.juzraai.toolbox.data.*
 
 /**
  * @author Zsolt Jurányi

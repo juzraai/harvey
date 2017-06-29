@@ -1,6 +1,6 @@
 package hu.juzraai.harvey
 
-import hu.juzraai.harvey.data.Task
+import hu.juzraai.harvey.data.*
 
 /**
  * @author Zsolt Jurányi

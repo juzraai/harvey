@@ -1,9 +1,8 @@
 package hu.juzraai.harvey.reader
 
-import org.junit.Assert.assertEquals
-import org.junit.Test
-import java.nio.charset.StandardCharsets
-
+import org.junit.*
+import org.junit.Assert.*
+import java.nio.charset.*
 
 /**
  * @author Zsolt Jurányi

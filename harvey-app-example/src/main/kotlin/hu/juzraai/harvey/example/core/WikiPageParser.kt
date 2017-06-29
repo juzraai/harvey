@@ -1,6 +1,6 @@
 package hu.juzraai.harvey.example.core
 
-import org.jsoup.nodes.Document
+import org.jsoup.nodes.*
 
 /**
  * @author Zsolt Jurányi

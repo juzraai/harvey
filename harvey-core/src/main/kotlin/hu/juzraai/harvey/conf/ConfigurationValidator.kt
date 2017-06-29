@@ -1,7 +1,7 @@
 package hu.juzraai.harvey.conf
 
-import com.beust.jcommander.ParameterException
-import java.io.File
+import com.beust.jcommander.*
+import java.io.*
 
 /**
  * @author Zsolt Jurányi

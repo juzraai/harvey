@@ -1,6 +1,6 @@
 package hu.juzraai.harvey.conf
 
-import com.beust.jcommander.JCommander
+import com.beust.jcommander.*
 
 /**
  * @author Zsolt Jurányi

@@ -1,18 +1,15 @@
 package hu.juzraai.harvey.example
 
-import com.beust.jcommander.ParameterException
-import com.google.gson.Gson
-import hu.juzraai.harvey.HarveyApplication
-import hu.juzraai.harvey.conf.HarveyConfigurationProvider
-import hu.juzraai.harvey.data.Task
-import hu.juzraai.harvey.example.conf.MyConfiguration
-import hu.juzraai.harvey.example.core.WikiPageFetcher
-import hu.juzraai.harvey.example.core.WikiPageParser
-import hu.juzraai.harvey.example.data.Artist
-import hu.juzraai.harvey.example.data.ArtistGenre
-import hu.juzraai.harvey.example.data.TaskState
-import hu.juzraai.harvey.reader.TsvFileReader
-import mu.KLogging
+import com.beust.jcommander.*
+import com.google.gson.*
+import hu.juzraai.harvey.*
+import hu.juzraai.harvey.conf.*
+import hu.juzraai.harvey.data.*
+import hu.juzraai.harvey.example.conf.*
+import hu.juzraai.harvey.example.core.*
+import hu.juzraai.harvey.example.data.*
+import hu.juzraai.harvey.reader.*
+import mu.*
 
 /**
  * @author Zsolt Jurányi

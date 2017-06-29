@@ -1,8 +1,8 @@
 package hu.juzraai.harvey.data
 
-import com.j256.ormlite.dao.Dao
-import hu.juzraai.toolbox.data.OrmLiteDatabase
-import mu.KLogging
+import com.j256.ormlite.dao.*
+import hu.juzraai.toolbox.data.*
+import mu.*
 
 /**
  * @author Zsolt Jurányi

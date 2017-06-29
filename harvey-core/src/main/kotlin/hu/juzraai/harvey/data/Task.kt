@@ -1,11 +1,10 @@
 package hu.juzraai.harvey.data
 
-import com.j256.ormlite.dao.ForeignCollection
-import com.j256.ormlite.field.DatabaseField
-import com.j256.ormlite.field.ForeignCollectionField
-import com.j256.ormlite.table.DatabaseTable
-import hu.juzraai.harvey.HarveyApplication
-import hu.juzraai.toolbox.data.Longtext
+import com.j256.ormlite.dao.*
+import com.j256.ormlite.field.*
+import com.j256.ormlite.table.*
+import hu.juzraai.harvey.*
+import hu.juzraai.toolbox.data.*
 import java.util.*
 
 /**

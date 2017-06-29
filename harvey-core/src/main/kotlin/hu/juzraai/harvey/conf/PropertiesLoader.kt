@@ -1,6 +1,6 @@
 package hu.juzraai.harvey.conf
 
-import java.io.File
+import java.io.*
 
 /**
  * @author Zsolt Jurányi

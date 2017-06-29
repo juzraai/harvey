@@ -1,7 +1,7 @@
 package hu.juzraai.harvey
 
-import hu.juzraai.harvey.data.Task
-import mu.KLogging
+import hu.juzraai.harvey.data.*
+import mu.*
 
 fun main(args: Array<String>) {
 	printLogo()
