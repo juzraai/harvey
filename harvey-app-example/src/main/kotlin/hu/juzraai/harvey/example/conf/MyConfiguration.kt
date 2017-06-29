@@ -1,9 +1,7 @@
 package hu.juzraai.harvey.example.conf
 
-import com.beust.jcommander.Parameter
-import com.beust.jcommander.ParametersDelegate
-import hu.juzraai.harvey.conf.HarveyConfiguration
-import hu.juzraai.harvey.conf.HarveyConfigurationProvider
+import com.beust.jcommander.*
+import hu.juzraai.harvey.conf.*
 
 /**
  * @author Zsolt Jurányi
@@ -16,7 +14,5 @@ data class MyConfiguration(
 		var sleep: Int = 0
 ) : HarveyConfigurationProvider {
 
-	override fun harveyConfiguration(): HarveyConfiguration {
-		return harveyConfiguration
-	}
+	override fun harveyConfiguration(): HarveyConfiguration = harveyConfiguration
 }

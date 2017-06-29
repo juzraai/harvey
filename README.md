@@ -252,9 +252,7 @@ data class YourConfiguration(
 	var yourParameter: Any
 ) : HarveyConfigurationProvider {
 
-	override fun harveyConfiguration(): HarveyConfiguration {
-		return harveyConfiguration
-	}
+	override fun harveyConfiguration(): HarveyConfiguration = harveyConfiguration
 }
 ```
 

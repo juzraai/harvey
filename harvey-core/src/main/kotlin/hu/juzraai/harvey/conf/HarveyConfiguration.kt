@@ -1,7 +1,6 @@
 package hu.juzraai.harvey.conf
 
-import com.beust.jcommander.DynamicParameter
-import com.beust.jcommander.Parameter
+import com.beust.jcommander.*
 
 /**
  * @author Zsolt Jurányi
@@ -53,7 +52,5 @@ data class HarveyConfiguration(
 		// TODO option for reading b/c/t from a dir
 ) : HarveyConfigurationProvider {
 
-	override fun harveyConfiguration(): HarveyConfiguration {
-		return this
-	}
+	override fun harveyConfiguration(): HarveyConfiguration = this
 }
