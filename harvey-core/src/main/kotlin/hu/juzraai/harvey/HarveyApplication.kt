@@ -1,24 +1,17 @@
 package hu.juzraai.harvey
 
-import com.beust.jcommander.JCommander
-import com.beust.jcommander.ParameterException
-import com.j256.ormlite.misc.TransactionManager
-import hu.juzraai.harvey.conf.ArgumentsParser
-import hu.juzraai.harvey.conf.ConfigurationValidator
-import hu.juzraai.harvey.conf.HarveyConfiguration
-import hu.juzraai.harvey.conf.HarveyConfigurationProvider
-import hu.juzraai.harvey.data.Batch
-import hu.juzraai.harvey.data.HarveyDao
-import hu.juzraai.harvey.data.State
-import hu.juzraai.harvey.data.Task
-import hu.juzraai.harvey.reader.TsvFileReader
-import hu.juzraai.harvey.string.StringUtils
-import hu.juzraai.toolbox.data.OrmLiteDatabase
-import hu.juzraai.toolbox.jdbc.ConnectionString
-import hu.juzraai.toolbox.log.LoggerSetup
-import mu.KLogging
-import org.apache.log4j.Level
-import java.io.File
+import com.beust.jcommander.*
+import com.j256.ormlite.misc.*
+import hu.juzraai.harvey.conf.*
+import hu.juzraai.harvey.data.*
+import hu.juzraai.harvey.reader.*
+import hu.juzraai.harvey.string.*
+import hu.juzraai.toolbox.data.*
+import hu.juzraai.toolbox.jdbc.*
+import hu.juzraai.toolbox.log.*
+import mu.*
+import org.apache.log4j.*
+import java.io.*
 import java.util.*
 
 abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApplication {
@@ -69,9 +62,8 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 			task.states?.any {
 				crawlerId() == it.crawlerId
 						&& crawlerVersion() == it.crawlerVersion
-						&& null != it.processedAt
+						&& it.finished
 			} ?: false
-
 
 	protected open fun canImportTasks(): Boolean = !harveyConfiguration.tasksFile.isNullOrBlank()
 
@@ -97,8 +89,7 @@ abstract class HarveyApplication(val args: Array<String>) : Runnable, IHarveyApp
 	protected open fun generateStateRecord(task: Task, rawState: Any?, finished: Boolean): State {
 		val id = hash("${task.id}/${crawlerId()}/${crawlerVersion()}")
 		val json = if (null == rawState) null else toJson(rawState)
-		val date = if (finished) Date() else null
-		return State(id, task, crawlerId(), crawlerVersion(), date, json)
+		return State(id, task, crawlerId(), crawlerVersion(), Date(), finished, json)
 	}
 
 	protected open fun generateTaskRecord(map: Map<String, String>): Task {

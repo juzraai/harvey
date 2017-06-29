@@ -1,10 +1,9 @@
 package hu.juzraai.harvey.data
 
-import com.j256.ormlite.field.DatabaseField
-import com.j256.ormlite.table.DatabaseTable
-import hu.juzraai.harvey.HarveyApplication
-import hu.juzraai.toolbox.data.Indexed
-import hu.juzraai.toolbox.data.Longtext
+import com.j256.ormlite.field.*
+import com.j256.ormlite.table.*
+import hu.juzraai.harvey.*
+import hu.juzraai.toolbox.data.*
 import java.util.*
 
 /**
@@ -25,7 +24,10 @@ data class State(
 		var crawlerVersion: Int = -1,
 
 		@DatabaseField
-		var processedAt: Date? = null,
+		var timestamp: Date? = null,
+
+		@DatabaseField
+		var finished: Boolean = false,
 
 		@DatabaseField @Longtext
 		var state: String? = null // JSON
